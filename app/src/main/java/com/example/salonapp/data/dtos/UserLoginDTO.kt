@@ -1,4 +1,4 @@
-package com.example.salonapp.data.remote.dtos
+package com.example.salonapp.data.dtos
 
 data class UserLoginDTO(
     val email: String = "",

@@ -1,22 +1,13 @@
 package com.example.salonapp.domain.repositories
 
-import com.example.salonapp.data.remote.dtos.SalonDTO
-import com.example.salonapp.data.remote.dtos.UserDTO
-import com.example.salonapp.data.remote.dtos.UserLoginDTO
-import com.example.salonapp.data.remote.dtos.UserRegisterDTO
+import com.example.salonapp.domain.models.Salon
+import com.example.salonapp.domain.models.User
 
-import retrofit2.http.Path
 
 interface SalonRepository {
 
-    suspend fun registerOwner(user: UserRegisterDTO): String
+    suspend fun getSalons(): List<Salon>
 
-    suspend fun login(user: UserLoginDTO): String
-
-    suspend fun getUser(): UserDTO
-
-    suspend fun getSalons(): List<SalonDTO>
-
-    suspend fun getSalonById(id: Int): SalonDTO
+    suspend fun getSalonById(id: Int): Salon
 
 }

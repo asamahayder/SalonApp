@@ -1,21 +1,9 @@
 package com.example.salonapp.data.remote
 
-import com.example.salonapp.data.remote.dtos.SalonDTO
-import com.example.salonapp.data.remote.dtos.UserDTO
-import com.example.salonapp.data.remote.dtos.UserLoginDTO
-import com.example.salonapp.data.remote.dtos.UserRegisterDTO
+import com.example.salonapp.data.dtos.SalonDTO
 import retrofit2.http.*
 
 interface SalonAPI {
-
-    @POST("Auth/RegisterOwner")
-    suspend fun registerOwner(user: UserRegisterDTO): String
-
-    @POST("Auth/Login")
-    suspend fun login(user: UserLoginDTO): String
-
-    @GET("User/GetUser")
-    suspend fun getUser(): UserDTO
 
     @GET("Salon")
     suspend fun getSalons(): List<SalonDTO>

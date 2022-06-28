@@ -1,7 +1,6 @@
 package com.example.salonapp.domain.use_cases.get_salon
 
 import com.example.salonapp.common.Resource
-import com.example.salonapp.data.remote.dtos.toSalon
 import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.repositories.SalonRepository
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +15,7 @@ class GetSalonUseCase @Inject constructor(
     operator fun invoke(id: Int): Flow<Resource<Salon>> = flow {
         try {
             emit(Resource.Loading())
-            val salon = repository.getSalonById(id).toSalon()
+            val salon = repository.getSalonById(id)
             emit(Resource.Success(salon))
         }catch (e: HttpException){
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
