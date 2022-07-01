@@ -8,4 +8,8 @@ object Constants {
     const val ROLE_EMPLOYEE = "Employee"
     const val ROLE_CUSTOMER = "Customer"
 
+    const val LOGTAG_USECASE_RESULTS = "usecase_results"
+
+    const val USER_ID_NOT_FOUND = "user id not found"
+
 }

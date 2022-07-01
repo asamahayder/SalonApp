@@ -10,6 +10,7 @@
     <string name="register_new_customer">New Customer</string>
     <string name="register_new_employee">New Employee</string>
     <string name="register_new_owner">New Owner</string>
+    <string name="register_new_account">Register new account</string>
 
     <string name="form_email">Email</string>
     <string name="form_email_error_isBlank">Email field cannot be blank</string>
@@ -32,5 +33,16 @@
     <string name="form_password_confirm">Confirm Password</string>
     <string name="form_password_confirm_error_notMatching">Not matching password</string>
     <string name="form_email_placeholder">example@domain.com</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="my_salons">My Salons</string>
+    <string name="create_salon">Create Salon</string>
+    <string name="salon_name">Salon Name</string>
+    <string name="salon_email">Salon Email</string>
+    <string name="salon_phone">Salon Phone</string>
+    <string name="city">City</string>
+    <string name="postcode">PostCode</string>
+    <string name="streetname">Street Name</string>
+    <string name="streetnumber">Street Number</string>
+    <string name="door">Door</string>
 
 </resources>

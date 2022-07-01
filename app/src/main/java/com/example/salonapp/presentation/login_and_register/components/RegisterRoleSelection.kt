@@ -1,5 +1,6 @@
 package com.example.salonapp.presentation.login_and_register.components
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.material3.FilledTonalButton
@@ -16,7 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
 import com.example.salonapp.common.Constants
 import com.example.salonapp.presentation.login_and_register.LoginAndRegisterViewModel
-import com.example.salonapp.presentation.login_and_register.RegistrationFormEvent
+import com.example.salonapp.presentation.login_and_register.LoginAndRegisterEvent
 
 @Composable
 fun RegisterRoleSelection(
@@ -24,6 +25,7 @@ fun RegisterRoleSelection(
 ){
     val state = viewModel.state.value
 
+    BackHandler(true) { viewModel.onEvent(LoginAndRegisterEvent.BackCalledFromRegisterRoles) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -41,7 +43,7 @@ fun RegisterRoleSelection(
         )
 
         FilledTonalButton(
-            onClick = { viewModel.onEvent(RegistrationFormEvent.SetRole(Constants.ROLE_CUSTOMER)) },
+            onClick = { viewModel.onEvent(LoginAndRegisterEvent.SetRole(Constants.ROLE_CUSTOMER)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
@@ -56,7 +58,7 @@ fun RegisterRoleSelection(
 
 
         FilledTonalButton(
-            onClick = { viewModel.onEvent(RegistrationFormEvent.SetRole(Constants.ROLE_EMPLOYEE)) },
+            onClick = { viewModel.onEvent(LoginAndRegisterEvent.SetRole(Constants.ROLE_EMPLOYEE)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
@@ -70,7 +72,7 @@ fun RegisterRoleSelection(
         }
 
         FilledTonalButton(
-            onClick = { viewModel.onEvent(RegistrationFormEvent.SetRole(Constants.ROLE_OWNER)) },
+            onClick = { viewModel.onEvent(LoginAndRegisterEvent.SetRole(Constants.ROLE_OWNER)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
@@ -83,32 +85,7 @@ fun RegisterRoleSelection(
             )
         }
 
-//        ActionButton(
-//            backgroundColor = colorResource(id = R.color.blue_primary),
-//            textColor = colorResource(id = R.color.white),
-//            text = stringResource(id = R.string.role_owner),
-//            onClick = {
-//                viewModel.onEvent(RegistrationFormEvent.SetRole(Constants.ROLE_CUSTOMER))
-//            }
-//        )
 //
-//        ActionButton(
-//            backgroundColor = colorResource(id = R.color.yellow_secondary),
-//            textColor = colorResource(id = R.color.black),
-//            text = stringResource(id = R.string.role_employee),
-//            onClick = {
-//                viewModel.onEvent(RegistrationFormEvent.SetRole(Constants.ROLE_EMPLOYEE))
-//            }
-//        )
-//
-//        ActionButton(
-//            backgroundColor = colorResource(id = R.color.yellow_primary),
-//            textColor = colorResource(id = R.color.black),
-//            text = stringResource(id = R.string.role_owner),
-//            onClick = {
-//                viewModel.onEvent(RegistrationFormEvent.SetRole(Constants.ROLE_OWNER))
-//            }
-//        )
 
     }
 

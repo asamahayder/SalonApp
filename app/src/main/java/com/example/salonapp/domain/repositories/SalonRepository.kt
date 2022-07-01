@@ -10,4 +10,8 @@ interface SalonRepository {
 
     suspend fun getSalonById(id: Int): Salon
 
+    suspend fun getSalonsByOwnerId(id: Int): List<Salon>
+
+    suspend fun createSalon(salon: Salon): List<Salon>
+
 }

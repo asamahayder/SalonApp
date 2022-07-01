@@ -9,13 +9,13 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class GetSalonsUseCase @Inject constructor(
+class GetSalonsByOwnerIdUseCase @Inject constructor(
     private val repository: SalonRepository
 ){
-    operator fun invoke(): Flow<Resource<List<Salon>>> = flow {
+    operator fun invoke(id: Int): Flow<Resource<List<Salon>>> = flow {
         try {
             emit(Resource.Loading())
-            val salons = repository.getSalons()
+            val salons = repository.getSalonsByOwnerId(id)
             emit(Resource.Success(salons))
         }catch (e: HttpException){
             emit(Resource.Error(

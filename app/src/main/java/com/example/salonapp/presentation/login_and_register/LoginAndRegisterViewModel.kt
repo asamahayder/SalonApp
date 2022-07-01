@@ -1,17 +1,19 @@
 package com.example.salonapp.presentation.login_and_register
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
+import com.example.salonapp.domain.models.UserLogin
 import com.example.salonapp.domain.models.UserRegister
-import com.example.salonapp.domain.models.ValidationEvent
 import com.example.salonapp.domain.use_cases.get_salons.GetSalonsUseCase
+import com.example.salonapp.domain.use_cases.login.LoginUseCase
 import com.example.salonapp.domain.use_cases.register.RegisterUseCase
 import com.example.salonapp.domain.use_cases.validations.*
-import com.example.salonapp.presentation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -23,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class  LoginAndRegisterViewModel @Inject constructor(
     private val registerUseCase: RegisterUseCase,
+    private val loginUseCase: LoginUseCase,
     private val getSalonsUseCase: GetSalonsUseCase,
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validateFirstNameUseCase: ValidateFirstNameUseCase,
@@ -36,53 +39,91 @@ class  LoginAndRegisterViewModel @Inject constructor(
     private val _state = mutableStateOf(LoginAndRegisterState())
     val state: State<LoginAndRegisterState> = _state
 
-    private val validationEventChannel = Channel<ValidationEvent>()
-    val validationEvents = validationEventChannel.receiveAsFlow()
+    private val eventChannel = Channel<LoginAndRegisterEvent>()
+    val events = eventChannel.receiveAsFlow()
 
     init {
 
     }
 
-    fun onEvent(event: RegistrationFormEvent) {
+    fun onEvent(event: LoginAndRegisterEvent) {
         when(event) {
-            is RegistrationFormEvent.EmailChanged -> {
-                _state.value = _state.value.copy(email = event.email)
+            is LoginAndRegisterEvent.EmailRegisterChanged -> {
+                _state.value = _state.value.copy(emailRegister = event.email)
             }
-            is RegistrationFormEvent.PasswordChanged -> {
-                _state.value = _state.value.copy(password = event.password)
+            is LoginAndRegisterEvent.EmailLoginChanged -> {
+                _state.value = _state.value.copy(emailLogin = event.email)
             }
-            is RegistrationFormEvent.ConfirmPasswordChanged -> {
+            is LoginAndRegisterEvent.PasswordRegisterChanged -> {
+                _state.value = _state.value.copy(passwordRegister = event.password)
+            }
+            is LoginAndRegisterEvent.PasswordLoginChanged -> {
+                _state.value = _state.value.copy(passwordLogin = event.password)
+            }
+            is LoginAndRegisterEvent.ConfirmPasswordChanged -> {
                 _state.value = _state.value.copy(passwordConfirm = event.passwordConfirm)
             }
-            is RegistrationFormEvent.FirstnameChanged -> {
+            is LoginAndRegisterEvent.FirstnameChanged -> {
                 _state.value = _state.value.copy(firstName = event.firstname)
             }
-            is RegistrationFormEvent.LastnameChanged -> {
+            is LoginAndRegisterEvent.LastnameChanged -> {
                 _state.value = _state.value.copy(lastName = event.lastname)
             }
-            is RegistrationFormEvent.PhoneChanged -> {
+            is LoginAndRegisterEvent.PhoneChanged -> {
                 _state.value = _state.value.copy(phone = event.phone)
             }
-            is RegistrationFormEvent.SetRole -> {
+            is LoginAndRegisterEvent.SetRole -> {
                 _state.value = _state.value.copy(role = event.role)
                 _state.value = _state.value.copy(currentScreen = LoginAndRegisterScreen.RegisterDetails)
             }
-            is RegistrationFormEvent.Submit -> {
-//                getSalonsUseCase().launchIn(viewModelScope)
-                runValidation()
+            is LoginAndRegisterEvent.SubmitRegister -> {
+                runRegisterValidation()
             }
+            is LoginAndRegisterEvent.SubmitLogin -> {
+                runLoginValidation()
+            }
+            is LoginAndRegisterEvent.GoToRegister -> {
+                _state.value = _state.value.copy(currentScreen = LoginAndRegisterScreen.RegisterRoleSelection)
+            }
+            is LoginAndRegisterEvent.BackCalledFromRegisterDetails -> {
+                _state.value = _state.value.copy(currentScreen = LoginAndRegisterScreen.RegisterRoleSelection)
+            }
+            is LoginAndRegisterEvent.BackCalledFromRegisterRoles -> {
+                _state.value = _state.value.copy(currentScreen = LoginAndRegisterScreen.Login)
+            }
+
         }
     }
 
-    private fun runValidation(){
-        val emailResult = validateEmailUseCase.execute(_state.value.email)
+    private fun runLoginValidation(){
+        val emailResult = validateEmailUseCase.execute(_state.value.emailLogin)
+        val passwordResult = validatePasswordUseCase.execute(_state.value.passwordLogin)
+
+        val hasError = listOf(
+            emailResult,
+            passwordResult
+        ).any { !it.successful }
+
+        if(hasError) {
+            _state.value = _state.value.copy(
+                emailLoginError = emailResult.errorMessage,
+                passwordLoginError = passwordResult.errorMessage
+            )
+            return
+        }
+
+        login(_state.value.emailLogin, _state.value.passwordLogin)
+    }
+
+    private fun runRegisterValidation(){
+        val emailResult = validateEmailUseCase.execute(_state.value.emailRegister)
         val firstnameResult = validateFirstNameUseCase.execute(_state.value.firstName)
         val lastnameResult = validateLastNameUseCase.execute(_state.value.lastName)
         val phoneResult = validatePhoneUseCase.execute(_state.value.phone)
-        val passwordResult = validatePasswordUseCase.execute(_state.value.password)
+        val passwordResult = validatePasswordUseCase.execute(_state.value.passwordRegister)
         val passwordConfirmResult = validatePasswordConfirmUseCase.execute(
             passwordConfirm = _state.value.passwordConfirm,
-            password = _state.value.password
+            password = _state.value.passwordRegister
         )
 
         val hasError = listOf(
@@ -96,11 +137,11 @@ class  LoginAndRegisterViewModel @Inject constructor(
 
         if(hasError) {
             _state.value = _state.value.copy(
-                emailError = emailResult.errorMessage,
+                emailRegisterError = emailResult.errorMessage,
                 firstNameError = firstnameResult.errorMessage,
                 lastNameError = lastnameResult.errorMessage,
                 phoneError = phoneResult.errorMessage,
-                passwordError = passwordResult.errorMessage,
+                passwordRegisterError = passwordResult.errorMessage,
                 passwordConfirmError = passwordConfirmResult.errorMessage
             )
             return
@@ -110,10 +151,41 @@ class  LoginAndRegisterViewModel @Inject constructor(
 
     }
 
+    private fun login(email: String, password: String){
+        val userLogin = UserLogin(
+            email = email,
+            password = password
+        )
+
+        loginUseCase(userLogin).onEach { result ->
+            Log.i(Constants.LOGTAG_USECASE_RESULTS, result.message?: "")
+            Log.i(Constants.LOGTAG_USECASE_RESULTS, result.data?: "")
+
+            when(result) {
+                is Resource.Success -> {
+                    viewModelScope.launch {
+                        eventChannel.send(LoginAndRegisterEvent.LoginOrRegisterSuccess)
+                    }
+                }
+                is Resource.Error -> {
+                    _state.value = _state.value.copy(
+                        error = result.message ?: "Unexpected error occurred",
+                        isLoading = false
+                    )
+                }
+                is Resource.Loading -> {
+                    _state.value = _state.value.copy(isLoading = true)
+                }
+
+            }
+        }.launchIn(viewModelScope)
+
+    }
+
     private fun register(){
         val newUser = UserRegister(
-            email = _state.value.email,
-            password = _state.value.password,
+            email = _state.value.emailRegister,
+            password = _state.value.passwordRegister,
             firstName = _state.value.firstName,
             lastName = _state.value.lastName,
             phone = _state.value.phone,
@@ -121,11 +193,13 @@ class  LoginAndRegisterViewModel @Inject constructor(
         )
 
         registerUseCase(newUser).onEach { result ->
+
+            Log.i(Constants.LOGTAG_USECASE_RESULTS, result.message?: "")
+            Log.i(Constants.LOGTAG_USECASE_RESULTS, result.data?: "")
+
             when(result){
                 is Resource.Success -> {
-                    viewModelScope.launch {
-                        validationEventChannel.send(ValidationEvent.Success)
-                    }
+                    login(_state.value.emailRegister, _state.value.passwordRegister)
                 }
                 is Resource.Error -> {
                     _state.value = _state.value.copy(

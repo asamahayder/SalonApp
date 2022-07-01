@@ -9,20 +9,20 @@ class ValidatePasswordUseCase @Inject constructor(
 
 ){
     fun execute(password: String): ValidationResult {
-        if(password.length < 8) {
+        if(password.length < 14) {
             return ValidationResult(
                 successful = false,
-                errorMessage = "Too short, should be at least 8 characters"
+                errorMessage = "Too short, must be at least 14 characters"
             )
         }
-        val containsLettersAndDigits = password.any { it.isDigit() } &&
+        /*val containsLettersAndDigits = password.any { it.isDigit() } &&
                 password.any { it.isLetter() }
         if(!containsLettersAndDigits) {
             return ValidationResult(
                 successful = false,
                 errorMessage = "Not valid password"
             )
-        }
+        }*/
         return ValidationResult(
             successful = true
         )

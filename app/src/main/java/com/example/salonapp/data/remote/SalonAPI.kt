@@ -11,4 +11,10 @@ interface SalonAPI {
     @GET("Salon/{id}")
     suspend fun getSalonById(@Path("id") id: Int): SalonDTO
 
+    @GET("Salon/GetByOwnerId")
+    suspend fun getSalonsByOwnerId(@Query("OwnerId") id: Int): List<SalonDTO>
+
+    @POST("Salon/CreateSalon")
+    suspend fun createSalon(@Body salonDTO: SalonDTO): List<SalonDTO>
+
 }

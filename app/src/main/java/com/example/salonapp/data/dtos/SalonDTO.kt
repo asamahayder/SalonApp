@@ -3,6 +3,7 @@ package com.example.salonapp.data.dtos
 import com.example.salonapp.domain.models.Salon
 
 data class SalonDTO(
+    val name: String = "",
     val city: String = "",
     val door: String = "",
     val email: String = "",

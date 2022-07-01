@@ -1,37 +1,39 @@
 package com.example.salonapp.data.repositories
 
-import com.example.salonapp.data.dtos.UserDTO
+import com.example.salonapp.data.dtos.AuthResponseDTO
 import com.example.salonapp.data.dtos.UserLoginDTO
 import com.example.salonapp.data.dtos.UserRegisterDTO
 import com.example.salonapp.data.remote.AuthAPI
 import javax.inject.Inject
-import com.example.salonapp.data.remote.SalonAPI
-import com.example.salonapp.domain.models.Salon
-import com.example.salonapp.domain.models.User
-import com.example.salonapp.domain.models.UserLogin
-import com.example.salonapp.domain.models.UserRegister
+import com.example.salonapp.domain.models.*
 import com.example.salonapp.domain.repositories.AuthRepository
-
-import com.example.salonapp.domain.repositories.SalonRepository
 
 class AuthRepositoryImplementation @Inject constructor(
     private val api: AuthAPI
 ): AuthRepository
 {
-    override suspend fun registerOwner(userRegister: UserRegister): String {
-        return api.registerOwner(toDTO(userRegister))
+    override suspend fun registerOwner(userRegister: UserRegister): AuthResponse {
+        return toModel(api.registerOwner(toDTO(userRegister)))
     }
 
-    override suspend fun registerEmployee(userRegister: UserRegister): String {
-        return api.registerEmployee(toDTO(userRegister))
+    override suspend fun registerEmployee(userRegister: UserRegister): AuthResponse {
+        return toModel(api.registerEmployee(toDTO(userRegister)))
     }
 
-    override suspend fun registerCustomer(userRegister: UserRegister): String {
-        return api.registerCustomer(toDTO(userRegister))
+    override suspend fun registerCustomer(userRegister: UserRegister): AuthResponse {
+        return toModel(api.registerCustomer(toDTO(userRegister)))
     }
 
-    override suspend fun login(userLogin: UserLogin): String {
-        return api.login(toDTO(userLogin))
+    override suspend fun login(userLogin: UserLogin): AuthResponse {
+        return toModel(api.login(toDTO(userLogin)))
+    }
+
+
+    private fun toModel(authResponseDTO: AuthResponseDTO): AuthResponse{
+        return AuthResponse(
+            message = authResponseDTO.message,
+            userId = authResponseDTO.userId
+        )
     }
 
     private fun toDTO(userRegister: UserRegister): UserRegisterDTO{

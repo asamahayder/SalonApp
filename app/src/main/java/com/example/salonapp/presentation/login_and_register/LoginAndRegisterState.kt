@@ -2,10 +2,14 @@ package com.example.salonapp.presentation.login_and_register
 
 data class LoginAndRegisterState (
     val isLoading: Boolean = false,
-    val email: String = "",
-    val emailError: String? = null,
-    val password: String = "",
-    val passwordError: String? = null,
+    val emailRegister: String = "",
+    val emailRegisterError: String? = null,
+    val emailLogin: String = "newowner@test.com",
+    val emailLoginError: String? = null,
+    val passwordRegister: String = "",
+    val passwordRegisterError: String? = null,
+    val passwordLogin: String = "stringstringst",
+    val passwordLoginError: String? = null,
     val passwordConfirm: String = "",
     val passwordConfirmError: String? = null,
     val firstName: String = "",
@@ -15,7 +19,7 @@ data class LoginAndRegisterState (
     val phone: String = "",
     val phoneError: String? = null,
     val role: String = "",
-    val currentScreen: LoginAndRegisterScreen = LoginAndRegisterScreen.RegisterRoleSelection,
+    val currentScreen: LoginAndRegisterScreen = LoginAndRegisterScreen.Login,
     val message: String = "",
     val error: String = ""
 )

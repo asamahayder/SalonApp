@@ -1,27 +1,25 @@
 package com.example.salonapp.domain.use_cases.validations
 
 import android.content.res.Resources
-import android.provider.Settings.Global.getString
 import android.util.Patterns
-import androidx.compose.ui.res.stringResource
 import com.example.salonapp.R
 import com.example.salonapp.domain.models.ValidationResult
 import javax.inject.Inject
 
-class ValidateEmailUseCase @Inject constructor(
+class ValidateSalonNameUseCase @Inject constructor(
 
 ) {
-    fun execute(email: String): ValidationResult {
-        if(email.isBlank()) {
+    fun execute(name: String): ValidationResult {
+        if(name.isBlank()) {
             return ValidationResult(
                 successful = false,
-                errorMessage = "Email is blank"
+                errorMessage = "Cannot be blank"
             )
         }
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (name.length > 100){
             return ValidationResult(
                 successful = false,
-                errorMessage = "Email not valid"
+                errorMessage = "Too long. Max 100 characters."
             )
         }
         return ValidationResult(

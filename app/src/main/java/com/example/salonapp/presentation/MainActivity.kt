@@ -12,7 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.SalonAppTheme
 import com.example.salonapp.presentation.login_and_register.components.LoginAndRegisterScreen
-import com.example.salonapp.presentation.main_owner.MainOwnerScreen
+import com.example.salonapp.presentation.home.HomeScreen
+import com.example.salonapp.presentation.salon_create.SalonCreateScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,9 +38,14 @@ class MainActivity : ComponentActivity() {
                             LoginAndRegisterScreen(navController)
                         }
                         composable(
-                            route = Screen.MainScreenOwner.route
+                            route = Screen.HomeScreen.route
                         ) {
-                            MainOwnerScreen(navController)
+                            HomeScreen(navController)
+                        }
+                        composable(
+                            route = Screen.CreateSalonScreen.route
+                        ) {
+                            SalonCreateScreen(navController)
                         }
 
                     }
