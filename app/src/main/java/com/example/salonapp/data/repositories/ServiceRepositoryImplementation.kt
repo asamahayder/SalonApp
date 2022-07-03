@@ -10,8 +10,7 @@ import javax.inject.Inject
 
 class ServiceRepositoryImplementation @Inject constructor(
     private val api: ServiceAPI,
-    private val salonRepository: SalonRepository,
-    private val userRepository: UserRepository
+    private val salonRepository: SalonRepository
 ): ServicesRepository
 {
 
@@ -54,6 +53,9 @@ class ServiceRepositoryImplementation @Inject constructor(
     }
 
     private suspend fun toModel(serviceDTO: ServiceDTO): Service{
+
+        val salon = salonRepository.getSalonById(serviceDTO.salonId)
+
         return Service(
             id = serviceDTO.id,
             name = serviceDTO.name,
@@ -62,8 +64,8 @@ class ServiceRepositoryImplementation @Inject constructor(
             pauseStartInMinutes = serviceDTO.pauseStartInMinutes,
             pauseEndInMinutes = serviceDTO.pauseEndInMinutes,
             price = serviceDTO.price,
-            salon = salonRepository.getSalonById(serviceDTO.salonId),
-            employees = serviceDTO.employeesIds.map { userRepository.getUserById(it) }
+            salon = salon,
+            employees = salon.employees
         )
     }
 

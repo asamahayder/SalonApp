@@ -8,11 +8,9 @@ import androidx.compose.material.icons.outlined.PeopleAlt
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import com.example.salonapp.R
 import com.example.salonapp.presentation.owner.employees.EmployeesScreen
 import com.example.salonapp.presentation.owner.profile.ProfileScreen
@@ -28,8 +26,8 @@ fun OwnerNavGraph(navController: NavHostController) {
         startDestination = BottomNavScreen.Schedule.route
     ) {
         composable(route = BottomNavScreen.Schedule.route) {
-            ScheduleScreen(onCreateSalon = {
-                navController.popBackStack()
+            ScheduleScreen(onCreateSalon = {firstSalon ->
+                if (firstSalon) navController.popBackStack()
                 navController.navigate(OwnerScreen.SalonCreate.route)
             })
         }

@@ -10,5 +10,6 @@ data class Salon(
     val postCode: String = "",
     val streetName: String = "",
     val streetNumber: String = "",
-    val suit: String = ""
+    val suit: String = "",
+    val employees: List<User> = listOf()
 )

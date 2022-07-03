@@ -167,18 +167,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSalonRepository(api: SalonAPI): SalonRepository {
-        return SalonRepositoryImplementation(api)
+    fun provideSalonRepository(api: SalonAPI, userRepository: UserRepository): SalonRepository {
+        return SalonRepositoryImplementation(api, userRepository)
     }
 
     @Provides
     @Singleton
     fun provideServiceRepository(
         api: ServiceAPI,
-        salonRepository: SalonRepository,
-        userRepository: UserRepository
+        salonRepository: SalonRepository
     ): ServicesRepository {
-        return ServiceRepositoryImplementation(api, salonRepository, userRepository)
+        return ServiceRepositoryImplementation(api, salonRepository)
     }
 
     @Provides

@@ -1,14 +1,5 @@
 package com.example.salonapp.presentation
 
-import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Ballot
-import androidx.compose.material.icons.outlined.Event
-import androidx.compose.material.icons.outlined.PeopleAlt
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.salonapp.R
-
 sealed class Screen(val route: String) {
     object LoginAndRegisterScreen: Screen("login_register_screen")
     object HomeScreen: Screen("home_screen")

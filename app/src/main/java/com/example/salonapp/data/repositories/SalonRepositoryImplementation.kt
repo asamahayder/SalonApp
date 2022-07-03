@@ -4,10 +4,12 @@ import com.example.salonapp.data.dtos.SalonDTO
 import com.example.salonapp.data.remote.SalonAPI
 import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.repositories.SalonRepository
+import com.example.salonapp.domain.repositories.UserRepository
 import javax.inject.Inject
 
 class SalonRepositoryImplementation @Inject constructor(
-    private val api: SalonAPI
+    private val api: SalonAPI,
+    private val userRepository: UserRepository
 ): SalonRepository
 {
 
@@ -46,11 +48,12 @@ class SalonRepositoryImplementation @Inject constructor(
             streetName = salon.streetName,
             streetNumber = salon.streetNumber,
             suit = salon.suit,
-            door = salon.door
+            door = salon.door,
+            employeesIds = salon.employees.map { it.id }
         )
     }
 
-    private fun toModel(salonDTO: SalonDTO): Salon{
+    private suspend fun toModel(salonDTO: SalonDTO): Salon{
         return Salon(
             id = salonDTO.id,
             name = salonDTO.name,
@@ -61,7 +64,8 @@ class SalonRepositoryImplementation @Inject constructor(
             postCode = salonDTO.postCode,
             phone = salonDTO.phone,
             door = salonDTO.door,
-            email = salonDTO.email
+            email = salonDTO.email,
+            employees = salonDTO.employeesIds.map { userRepository.getUserById(it) }
         )
     }
 

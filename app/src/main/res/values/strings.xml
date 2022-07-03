@@ -48,5 +48,11 @@
     <string name="bottom_nav_services">Services</string>
     <string name="bottom_nav_employees">Employees</string>
     <string name="bottom_nav_profile">Profile</string>
+    <string name="salon">Salon</string>
+    <string name="dropdown_collapse">collapse dropdown</string>
+    <string name="dropdown_expand">Expand Dropdown</string>
+    <string name="employee">Employee</string>
+    <string name="please_create_a_salon">Please create a salon</string>
+    <string name="no_employees_to_show_message">No employees to show. Employees must first send a request to your salon. You can then accept their request under the \'employees\' section in the bottom navigation bar</string>
 
 </resources>

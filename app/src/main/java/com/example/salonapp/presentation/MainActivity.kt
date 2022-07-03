@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.*
+import androidx.navigation.compose.rememberNavController
 import com.example.compose.SalonAppTheme
 import com.example.salonapp.presentation.navigation.RootNavigationGraph
 import dagger.hilt.android.AndroidEntryPoint

@@ -8,17 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
 import com.example.salonapp.common.SessionManager
-import com.example.salonapp.domain.models.UserLogin
 import com.example.salonapp.domain.use_cases.get_salons.GetSalonsByOwnerIdUseCase
-import com.example.salonapp.domain.use_cases.login.LoginUseCase
-import com.example.salonapp.domain.use_cases.validations.ValidateEmailUseCase
-import com.example.salonapp.domain.use_cases.validations.ValidatePasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -51,8 +46,13 @@ class  ScheduleViewModel @Inject constructor(
                             salons = result.data ?: listOf(),
                             fetchedSalons = true
                         )
-                        if (_state.value.salons.isNullOrEmpty())eventChannel.send(ScheduleEvent.GoToCreateSalon)
 
+                        if (!result.data.isNullOrEmpty()){
+                            onEvent(ScheduleEvent.OnSetActiveSalon(result.data[0]))
+                        }
+                        else{
+                            eventChannel.send(ScheduleEvent.OnCreateSalon)
+                        }
                     }
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(isLoading = true)
@@ -71,6 +71,29 @@ class  ScheduleViewModel @Inject constructor(
 
     fun onEvent(event: ScheduleEvent) {
         when(event) {
+            is ScheduleEvent.OnToggleSalonMenu -> {
+                _state.value = _state.value.copy(salonSelectionExpanded = !state.value.salonSelectionExpanded)
+            }
+            is ScheduleEvent.OnSalonSelectDismiss -> {
+                _state.value = _state.value.copy(salonSelectionExpanded = false)
+            }
+            is ScheduleEvent.OnSetActiveSalon -> {
+                _state.value = _state.value.copy(
+                    activeSalon = event.salon,
+                    salonSelectionExpanded = false,
+                    employees = event.salon.employees
+                )
+            }
+            is ScheduleEvent.OnToggleEmployeeMenu -> {
+                _state.value = _state.value.copy(employeeSelectionExpanded = !state.value.employeeSelectionExpanded)
+            }
+            is ScheduleEvent.OnEmployeeSelectDismiss -> {
+                _state.value = _state.value.copy(employeeSelectionExpanded = false)
+            }
+            is ScheduleEvent.OnSetActiveEmployee -> {
+                _state.value = _state.value.copy(activeEmployee = event.employee, employeeSelectionExpanded = false)
+            }
+
         }
     }
 

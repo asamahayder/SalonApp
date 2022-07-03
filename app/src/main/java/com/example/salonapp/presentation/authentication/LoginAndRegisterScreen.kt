@@ -1,26 +1,11 @@
 package com.example.salonapp.presentation.authentication.components
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.salonapp.R
-import com.example.salonapp.presentation.Screen
-import com.example.salonapp.presentation.authentication.LoginAndRegisterEvent
 import com.example.salonapp.presentation.authentication.LoginAndRegisterScreen
 import com.example.salonapp.presentation.authentication.LoginAndRegisterViewModel
-import com.example.salonapp.presentation.authentication.login.LoginScreen
-import com.example.salonapp.presentation.authentication.register.RegisterDetailsScreen
-import com.example.salonapp.presentation.authentication.register.RegisterRoleSelectionScreen
 
 @Composable
 fun LoginAndRegisterScreen(

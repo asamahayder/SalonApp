@@ -1,7 +1,6 @@
 package com.example.salonapp.presentation.authentication.register
 
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -24,8 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
-import com.example.salonapp.presentation.Screen
-import com.example.salonapp.presentation.authentication.LoginAndRegisterEvent
 import com.example.salonapp.presentation.components.screenLogoAndTitle
 
 @Composable
