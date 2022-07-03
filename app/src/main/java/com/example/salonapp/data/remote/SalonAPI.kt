@@ -17,4 +17,10 @@ interface SalonAPI {
     @POST("Salon/CreateSalon")
     suspend fun createSalon(@Body salonDTO: SalonDTO): List<SalonDTO>
 
+    @PUT("Salon/UpdateSalon")
+    suspend fun updateSalon(@Body salonDTO: SalonDTO): List<SalonDTO>
+
+    @DELETE("Salon/DeleteSalon")
+    suspend fun deleteSalon(@Query("Id") salonId:Int): List<SalonDTO>
+
 }

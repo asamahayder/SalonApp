@@ -1,7 +1,5 @@
 package com.example.salonapp.common
 
-import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Interceptor
 import okhttp3.Response
 

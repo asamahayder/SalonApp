@@ -1,8 +1,5 @@
 package com.example.salonapp.domain.use_cases.validations
 
-import android.content.res.Resources
-import android.util.Patterns
-import com.example.salonapp.R
 import com.example.salonapp.domain.models.ValidationResult
 import javax.inject.Inject
 

@@ -4,9 +4,11 @@ import com.example.salonapp.data.dtos.AuthResponseDTO
 import com.example.salonapp.data.dtos.UserLoginDTO
 import com.example.salonapp.data.dtos.UserRegisterDTO
 import com.example.salonapp.data.remote.AuthAPI
-import javax.inject.Inject
-import com.example.salonapp.domain.models.*
+import com.example.salonapp.domain.models.AuthResponse
+import com.example.salonapp.domain.models.UserLogin
+import com.example.salonapp.domain.models.UserRegister
 import com.example.salonapp.domain.repositories.AuthRepository
+import javax.inject.Inject
 
 class AuthRepositoryImplementation @Inject constructor(
     private val api: AuthAPI

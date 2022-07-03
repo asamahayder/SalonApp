@@ -1,16 +1,13 @@
 package com.example.salonapp.domain.use_cases.login
 
-import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
 import com.example.salonapp.common.SessionManager
 import com.example.salonapp.domain.models.UserLogin
-import com.example.salonapp.domain.models.UserRegister
 import com.example.salonapp.domain.repositories.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
-
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
@@ -31,7 +28,7 @@ class LoginUseCase @Inject constructor(
             if (!message.isNullOrBlank() && response.userId != null) {
                 sessionManager.saveAuthToken(message)
                 sessionManager.saveUserId(response.userId)
-                emit(Resource.Success("Successful login"))
+                emit(Resource.Success(data = "Login Successful"))
             }
             else emit(Resource.Error("Couldn't retrieve message or user id from server."))
 

@@ -4,17 +4,9 @@ import android.content.Context
 import com.example.salonapp.common.AuthInterceptor
 import com.example.salonapp.common.Constants
 import com.example.salonapp.common.SessionManager
-import com.example.salonapp.data.remote.AuthAPI
-import com.example.salonapp.data.remote.SalonAPI
-import com.example.salonapp.data.remote.UserAPI
-import com.example.salonapp.data.repositories.AuthRepositoryImplementation
-import com.example.salonapp.data.repositories.SalonRepositoryImplementation
-import com.example.salonapp.data.repositories.UserRepositoryImplementation
-import com.example.salonapp.domain.repositories.AuthRepository
-import com.example.salonapp.domain.repositories.SalonRepository
-import com.example.salonapp.domain.repositories.UserRepository
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.example.salonapp.data.remote.*
+import com.example.salonapp.data.repositories.*
+import com.example.salonapp.domain.repositories.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,8 +15,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -33,31 +23,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSalonApi(okHttpClient: OkHttpClient): SalonAPI{
-        return Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
-            .build()
-            .create(SalonAPI::class.java)
-    }
-
-    @Provides
-    @Singleton
     fun provideSessionManager(@ApplicationContext context: Context): SessionManager{
         return SessionManager(context)
-    }
-
-
-    @Provides
-    @Singleton
-    fun provideUserApi(okHttpClient: OkHttpClient): UserAPI{
-        return Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
-            .build()
-            .create(UserAPI::class.java)
     }
 
     @Provides
@@ -74,6 +41,7 @@ object AppModule {
             .build()
     }
 
+
     @Provides
     @Singleton
     fun provideAuthApi(okHttpClient: OkHttpClient): AuthAPI{
@@ -87,8 +55,136 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideBookingApi(okHttpClient: OkHttpClient): BookingAPI{
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(BookingAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOpeningHoursApi(okHttpClient: OkHttpClient): OpeningHoursAPI{
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(OpeningHoursAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRequestApi(okHttpClient: OkHttpClient): RequestAPI{
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(RequestAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSalonApi(okHttpClient: OkHttpClient): SalonAPI{
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(SalonAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideServiceApi(okHttpClient: OkHttpClient): ServiceAPI{
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(ServiceAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTextApi(okHttpClient: OkHttpClient): TextAPI{
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(TextAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserApi(okHttpClient: OkHttpClient): UserAPI{
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(UserAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(api: AuthAPI): AuthRepository {
+        return AuthRepositoryImplementation(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBookingRepository(
+        api: BookingAPI,
+        userRepository: UserRepository,
+        servicesRepository: ServicesRepository
+    ): BookingRepository {
+        return BookingRepositoryImplementation(api, userRepository, servicesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOpeningHoursRepository(
+        api: OpeningHoursAPI,
+        userRepository: UserRepository
+    ): OpeningHoursRepository {
+        return OpeningHoursRepositoryImplementation(api, userRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRequestRepository(
+        api: RequestAPI,
+        userRepository: UserRepository,
+        salonRepository: SalonRepository
+    ): RequestRepository {
+        return RequestRepositoryImplementation(api, userRepository, salonRepository)
+    }
+
+    @Provides
+    @Singleton
     fun provideSalonRepository(api: SalonAPI): SalonRepository {
         return SalonRepositoryImplementation(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideServiceRepository(
+        api: ServiceAPI,
+        salonRepository: SalonRepository,
+        userRepository: UserRepository
+    ): ServicesRepository {
+        return ServiceRepositoryImplementation(api, salonRepository, userRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTextRepository(api: TextAPI): TextRepository {
+        return TextRepositoryImplementation(api)
     }
 
     @Provides
@@ -97,11 +193,7 @@ object AppModule {
         return UserRepositoryImplementation(api)
     }
 
-    @Provides
-    @Singleton
-    fun provideAuthRepository(api: AuthAPI): AuthRepository {
-        return AuthRepositoryImplementation(api)
-    }
+
 
 
 

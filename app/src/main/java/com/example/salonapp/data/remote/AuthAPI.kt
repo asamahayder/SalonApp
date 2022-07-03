@@ -1,7 +1,10 @@
 package com.example.salonapp.data.remote
 
-import com.example.salonapp.data.dtos.*
-import retrofit2.http.*
+import com.example.salonapp.data.dtos.AuthResponseDTO
+import com.example.salonapp.data.dtos.UserLoginDTO
+import com.example.salonapp.data.dtos.UserRegisterDTO
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface AuthAPI {
 

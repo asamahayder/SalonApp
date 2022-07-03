@@ -1,11 +1,10 @@
 package com.example.salonapp.data.repositories
 
 import com.example.salonapp.data.dtos.SalonDTO
-import javax.inject.Inject
 import com.example.salonapp.data.remote.SalonAPI
 import com.example.salonapp.domain.models.Salon
-
 import com.example.salonapp.domain.repositories.SalonRepository
+import javax.inject.Inject
 
 class SalonRepositoryImplementation @Inject constructor(
     private val api: SalonAPI
@@ -26,6 +25,14 @@ class SalonRepositoryImplementation @Inject constructor(
 
     override suspend fun createSalon(salon: Salon): List<Salon> {
         return api.createSalon(toDTO(salon)).map { toModel(it) }
+    }
+
+    override suspend fun updateSalon(salon: Salon): List<Salon> {
+        return api.updateSalon(toDTO(salon)).map { toModel(it) }
+    }
+
+    override suspend fun deleteSalon(salonId: Int): List<Salon> {
+        return api.deleteSalon(salonId).map { toModel(it) }
     }
 
     private fun toDTO(salon: Salon): SalonDTO{

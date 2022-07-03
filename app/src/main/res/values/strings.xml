@@ -44,5 +44,9 @@
     <string name="streetname">Street Name</string>
     <string name="streetnumber">Street Number</string>
     <string name="door">Door</string>
+    <string name="bottom_nav_schedule">Schedule</string>
+    <string name="bottom_nav_services">Services</string>
+    <string name="bottom_nav_employees">Employees</string>
+    <string name="bottom_nav_profile">Profile</string>
 
 </resources>

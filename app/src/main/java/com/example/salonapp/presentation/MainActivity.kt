@@ -7,13 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import com.example.compose.SalonAppTheme
-import com.example.salonapp.presentation.login_and_register.components.LoginAndRegisterScreen
-import com.example.salonapp.presentation.home.HomeScreen
-import com.example.salonapp.presentation.salon_create.SalonCreateScreen
+import com.example.salonapp.presentation.navigation.RootNavigationGraph
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,34 +18,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SalonAppTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = Screen.LoginAndRegisterScreen.route
-                    ){
-                        composable(
-                            route = Screen.LoginAndRegisterScreen.route
-                        ) {
-                            LoginAndRegisterScreen(navController)
-                        }
-                        composable(
-                            route = Screen.HomeScreen.route
-                        ) {
-                            HomeScreen(navController)
-                        }
-                        composable(
-                            route = Screen.CreateSalonScreen.route
-                        ) {
-                            SalonCreateScreen(navController)
-                        }
-
-                    }
-
+                    RootNavigationGraph(navController = rememberNavController())
                 }
             }
         }

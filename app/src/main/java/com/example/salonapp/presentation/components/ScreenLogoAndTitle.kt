@@ -1,4 +1,4 @@
-package com.example.salonapp.presentation.login_and_register.components
+package com.example.salonapp.presentation.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
