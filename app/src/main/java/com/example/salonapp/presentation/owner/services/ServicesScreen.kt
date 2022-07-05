@@ -188,18 +188,29 @@ fun ServicesScreen(
                     }
                 }
 
+
+                if(state.activeSalon != null){
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            viewModel.onEvent(ServicesEvent.OnCreateService)
+                            onCreateService()
+                                  },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(12.dp)
+                    ) {
+                        Icon(Icons.Filled.Create, stringResource(R.string.create_service))
+                        androidx.compose.material.Text(text = stringResource(R.string.create_service))
+                    }
+                }
+
+
             }
 
 
-            ExtendedFloatingActionButton(
-                onClick = { onCreateService() },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(12.dp)
-            ) {
-                Icon(Icons.Filled.Create, stringResource(R.string.create_service))
-                androidx.compose.material.Text(text = stringResource(R.string.create_service))
-            }
+
+
+
 
         }
 

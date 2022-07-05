@@ -111,6 +111,7 @@ class  ServicesViewModel @Inject constructor(
                     activeSalon = event.salon,
                     salonSelectionExpanded = false
                 )
+                sessionManager.saveSalonId(_state.value.activeSalon!!.id)
                 getServices()
             }
             is ServicesEvent.OnToggleSalonMenu -> {

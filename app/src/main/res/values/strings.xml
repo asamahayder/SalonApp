@@ -63,5 +63,14 @@
     <string name="edit_service">Edit Service</string>
     <string name="try_again">Try Again</string>
     <string name="no_services">No services for this salon. Create a service or try to fetch again.</string>
+    <string name="service_name">Service Name</string>
+    <string name="service_description">Description</string>
+    <string name="service_price">Price</string>
+    <string name="positive_integer">Must be a positive integer</string>
+    <string name="service_duration">Duration</string>
+    <string name="service_pause_start">Pause Start</string>
+    <string name="add_employee">Add Employee</string>
+    <string name="employee_remove">Remove Employee</string>
+    <string name="service_create">Create Service</string>
 
 </resources>

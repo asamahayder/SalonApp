@@ -8,8 +8,8 @@ interface SalonAPI {
     @GET("Salon")
     suspend fun getSalons(): List<SalonDTO>
 
-    @GET("Salon/{id}")
-    suspend fun getSalonById(@Path("id") id: Int): SalonDTO
+    @GET("Salon/id")
+    suspend fun getSalonById(@Query("Id") id: Int): SalonDTO
 
     @GET("Salon/GetByOwnerId")
     suspend fun getSalonsByOwnerId(@Query("OwnerId") id: Int): List<SalonDTO>

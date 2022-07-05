@@ -16,6 +16,19 @@ class SessionManager(
     companion object {
         const val USER_TOKEN = "user_token"
         const val USER_ID = "user_id"
+        const val SALON_ID = "active_salon_id"
+    }
+
+    fun saveSalonId(id: Int){
+        val editor = prefs.edit()
+        editor.putString(SALON_ID, id.toString())
+        editor.apply()
+    }
+
+    fun fetchSalonId(): Int? {
+        val idString: String = prefs.getString(SALON_ID, Constants.SALON_ID_NOT_FOUND)!!
+
+        return if (idString != Constants.SALON_ID_NOT_FOUND) idString.toInt() else null
     }
 
     fun saveUserId(id: Int){

@@ -12,5 +12,6 @@ object Constants {
     const val LOGTAG_USECASE_RESULTS = "usecase_results"
 
     const val USER_ID_NOT_FOUND = "user id not found"
+    const val SALON_ID_NOT_FOUND = "salon id not found"
 
 }

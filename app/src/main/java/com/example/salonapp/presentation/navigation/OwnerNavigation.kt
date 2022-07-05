@@ -17,6 +17,7 @@ import com.example.salonapp.presentation.owner.profile.ProfileScreen
 import com.example.salonapp.presentation.owner.salon_create.SalonCreateScreen
 import com.example.salonapp.presentation.owner.schedule.ScheduleScreen
 import com.example.salonapp.presentation.owner.services.ServicesScreen
+import com.example.salonapp.presentation.owner.services.create.ServicesCreateScreen
 
 @Composable
 fun OwnerNavGraph(navController: NavHostController) {
@@ -37,6 +38,7 @@ fun OwnerNavGraph(navController: NavHostController) {
         composable(route = BottomNavScreen.Services.route) {
             ServicesScreen(
                 onCreateService = {
+                                  navController.navigate(OwnerScreen.ServiceCreate.route)
 
                 },
                 onEditService = {
@@ -70,6 +72,16 @@ fun OwnerNavGraph(navController: NavHostController) {
             })
         }
 
+        composable(route = OwnerScreen.ServiceCreate.route){
+            ServicesCreateScreen(
+                onCreateService = {  },
+                onCreateSalon = {  },
+                onEditService = {
+
+                }
+            )
+        }
+
     }
 }
 
@@ -82,6 +94,9 @@ sealed class OwnerScreen(
     )
     object BookingCreate : OwnerScreen(
         route = "booking_create"
+    )
+    object ServiceCreate : OwnerScreen(
+        route = "service_create"
     )
 }
 
