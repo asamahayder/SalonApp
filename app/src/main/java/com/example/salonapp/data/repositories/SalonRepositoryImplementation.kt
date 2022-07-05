@@ -3,6 +3,7 @@ package com.example.salonapp.data.repositories
 import com.example.salonapp.data.dtos.SalonDTO
 import com.example.salonapp.data.remote.SalonAPI
 import com.example.salonapp.domain.models.Salon
+import com.example.salonapp.domain.models.User
 import com.example.salonapp.domain.repositories.SalonRepository
 import com.example.salonapp.domain.repositories.UserRepository
 import javax.inject.Inject
@@ -54,6 +55,11 @@ class SalonRepositoryImplementation @Inject constructor(
     }
 
     private suspend fun toModel(salonDTO: SalonDTO): Salon{
+        var employees: List<User> = listOf()
+        if (!salonDTO.employeesIds.isNullOrEmpty()){
+            employees = salonDTO.employeesIds.map { userRepository.getUserById(it) }
+        }
+
         return Salon(
             id = salonDTO.id,
             name = salonDTO.name,
@@ -65,7 +71,7 @@ class SalonRepositoryImplementation @Inject constructor(
             phone = salonDTO.phone,
             door = salonDTO.door,
             email = salonDTO.email,
-            employees = salonDTO.employeesIds.map { userRepository.getUserById(it) }
+            employees = employees
         )
     }
 

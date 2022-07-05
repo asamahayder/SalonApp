@@ -53,6 +53,15 @@
     <string name="dropdown_expand">Expand Dropdown</string>
     <string name="employee">Employee</string>
     <string name="please_create_a_salon">Please create a salon</string>
-    <string name="no_employees_to_show_message">No employees to show. Employees must first send a request to your salon. You can then accept their request under the \'employees\' section in the bottom navigation bar</string>
+    <string name="no_employees_to_show_message">No employees to show for this salon. Employees must first send a request to your salon. You can then accept their request under the \'employees\' section in the bottom navigation bar.</string>
+    <string name="previous_week">Prvious week</string>
+    <string name="next_week">Next week</string>
+    <string name="week">Week</string>
+    <string name="add_booking">Add Booking</string>
+    <string name="create_service">Create Service</string>
+    <string name="delete_service">Delete Service</string>
+    <string name="edit_service">Edit Service</string>
+    <string name="try_again">Try Again</string>
+    <string name="no_services">No services for this salon. Create a service or try to fetch again.</string>
 
 </resources>

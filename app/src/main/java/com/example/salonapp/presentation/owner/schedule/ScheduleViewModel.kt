@@ -83,6 +83,13 @@ class  ScheduleViewModel @Inject constructor(
                     salonSelectionExpanded = false,
                     employees = event.salon.employees
                 )
+
+                if (!event.salon.employees.isNullOrEmpty()){
+                    _state.value = _state.value.copy(
+                        activeEmployee = event.salon.employees[0]
+                    )
+                }
+
             }
             is ScheduleEvent.OnToggleEmployeeMenu -> {
                 _state.value = _state.value.copy(employeeSelectionExpanded = !state.value.employeeSelectionExpanded)
@@ -92,6 +99,15 @@ class  ScheduleViewModel @Inject constructor(
             }
             is ScheduleEvent.OnSetActiveEmployee -> {
                 _state.value = _state.value.copy(activeEmployee = event.employee, employeeSelectionExpanded = false)
+            }
+            is ScheduleEvent.OnSetSalonSelectionWidth -> {
+                _state.value = _state.value.copy(salonSelectionWidth = event.width)
+            }
+            is ScheduleEvent.OnSetEmployeeSelectionWidth -> {
+                _state.value = _state.value.copy(employeeSelectionWidth = event.width)
+            }
+            is ScheduleEvent.OnWeekChanged -> {
+                _state.value = _state.value.copy(currentWeek = event.newWeek)
             }
 
         }

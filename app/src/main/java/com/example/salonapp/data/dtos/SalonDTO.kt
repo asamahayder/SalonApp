@@ -11,5 +11,5 @@ data class SalonDTO(
     val streetName: String = "",
     val streetNumber: String = "",
     val suit: String = "",
-    val employeesIds: List<Int>
+    val employeesIds: List<Int> = listOf()
 )

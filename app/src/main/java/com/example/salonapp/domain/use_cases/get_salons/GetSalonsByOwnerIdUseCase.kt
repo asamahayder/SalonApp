@@ -19,10 +19,10 @@ class GetSalonsByOwnerIdUseCase @Inject constructor(
             emit(Resource.Success(salons))
         }catch (e: HttpException){
             emit(Resource.Error(
-                e.localizedMessage ?: ("An unexpected error occurred. " + e.stackTraceToString())
+                e.localizedMessage ?: ("An unexpected error occurred. ")
             ))
         }catch (e: IOException){
-            emit(Resource.Error("Couldn't reach server. Check your internet connection. " + e.stackTraceToString()))
+            emit(Resource.Error("Couldn't reach server. Check your internet connection. "))
         }
 
     }

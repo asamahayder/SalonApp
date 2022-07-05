@@ -1,7 +1,9 @@
 package com.example.salonapp.presentation.owner.schedule
 
+import androidx.compose.ui.geometry.Size
 import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.models.User
+import java.time.LocalDateTime
 
 data class ScheduleState (
     val activeSalon: Salon? = null,
@@ -13,5 +15,10 @@ data class ScheduleState (
     val error: String = "",
     val fetchedSalons: Boolean = false,
     val salonSelectionExpanded: Boolean = false,
-    val employeeSelectionExpanded: Boolean = false
+    val employeeSelectionExpanded: Boolean = false,
+
+    val salonSelectionWidth: Size = Size.Zero,
+    val employeeSelectionWidth: Size = Size.Zero,
+
+    val currentWeek: LocalDateTime = LocalDateTime.now()
 )

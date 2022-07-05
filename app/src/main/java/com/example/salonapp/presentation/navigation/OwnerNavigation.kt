@@ -26,14 +26,26 @@ fun OwnerNavGraph(navController: NavHostController) {
         startDestination = BottomNavScreen.Schedule.route
     ) {
         composable(route = BottomNavScreen.Schedule.route) {
-            ScheduleScreen(onCreateSalon = {firstSalon ->
-                if (firstSalon) navController.popBackStack()
-                navController.navigate(OwnerScreen.SalonCreate.route)
-            })
+            ScheduleScreen(
+                onCreateSalon = { firstSalon ->
+                    if (firstSalon) navController.popBackStack()
+                    navController.navigate(OwnerScreen.SalonCreate.route)},
+                onCreateBooking = { navController.navigate(OwnerScreen.BookingCreate.route)}
+            )
         }
 
         composable(route = BottomNavScreen.Services.route) {
-            ServicesScreen()
+            ServicesScreen(
+                onCreateService = {
+
+                },
+                onEditService = {
+
+                },
+                onCreateSalon = {
+                    navController.navigate(OwnerScreen.SalonCreate.route)
+                }
+            )
         }
 
         composable(route = BottomNavScreen.Employees.route) {
@@ -51,17 +63,30 @@ fun OwnerNavGraph(navController: NavHostController) {
             })
         }
 
+        composable(route = OwnerScreen.BookingCreate.route) {
+            SalonCreateScreen(onSalonCreated = {
+                navController.popBackStack()
+                navController.navigate(BottomNavScreen.Schedule.route)
+            })
+        }
+
     }
 }
 
+//For screens in the owner-flow that do not use a nav bar
 sealed class OwnerScreen(
     val route: String,
 ){
     object SalonCreate : OwnerScreen(
         route = "salon_create"
     )
+    object BookingCreate : OwnerScreen(
+        route = "booking_create"
+    )
 }
 
+
+//For screens in the owner-flow that do use a nav bar
 sealed class BottomNavScreen(
     val route: String,
     @StringRes val titleId: Int,
