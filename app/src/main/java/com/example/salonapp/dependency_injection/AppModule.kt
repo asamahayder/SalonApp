@@ -175,9 +175,10 @@ object AppModule {
     @Singleton
     fun provideServiceRepository(
         api: ServiceAPI,
-        salonRepository: SalonRepository
+        salonRepository: SalonRepository,
+        userRepository: UserRepository
     ): ServicesRepository {
-        return ServiceRepositoryImplementation(api, salonRepository)
+        return ServiceRepositoryImplementation(api, salonRepository, userRepository)
     }
 
     @Provides

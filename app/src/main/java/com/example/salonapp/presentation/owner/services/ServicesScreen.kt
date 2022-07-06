@@ -3,13 +3,17 @@ package com.example.salonapp.presentation.owner.services
 
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ListItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,13 +22,17 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
 import com.example.salonapp.presentation.owner.schedule.noRippleClickable
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ServicesScreen(
     viewModel: ServicesViewModel = hiltViewModel(),
@@ -46,7 +54,10 @@ fun ServicesScreen(
         }
     }
 
-
+    DisposableEffect(key1 = viewModel) {
+        viewModel.onEvent(ServicesEvent.OnInitialize)
+        onDispose {  }
+    }
 
 
     Column(modifier = Modifier
@@ -149,17 +160,62 @@ fun ServicesScreen(
                             .align(Alignment.Center)
                     ){
                         items(state.services){service ->
-                            Row(modifier = Modifier.fillMaxWidth()) {
-                                Text(text = service.name)
 
-                                IconButton(onClick = { onEditService(service.id) }) {
-                                    Icon(Icons.Filled.Edit, stringResource(R.string.edit_service))
+                            ListItem(
+                                modifier = Modifier.clickable {
+                                    onEditService(service.id)
+                                },
+                                text = {
+                                    Text(
+                                        text = service.name,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                secondaryText = {
+                                    val description = service.description ?: ""
+                                    Text(
+                                        text = service.price.toString() + "kr. - " + " " + description,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        fontStyle = FontStyle.Italic,
+                                        fontWeight = FontWeight.Light
+                                    )
+                                },
+                                singleLineSecondaryText = true,
+                                trailing = {
+                                    IconButton(onClick = {
+                                        viewModel.onEvent(ServicesEvent.OnShowAlert)
+                                    }) {
+                                        Icon(Icons.Filled.Delete, stringResource(R.string.delete_service))
+                                    }
                                 }
+                            )
 
-                                IconButton(onClick = { viewModel.onEvent(ServicesEvent.OnDeleteService(service.id)) }) {
-                                    Icon(Icons.Filled.Delete, stringResource(R.string.delete_service))
-                                }
+                            if(state.showDeleteAlert){
+                                AlertDialog(
+                                    title = {
+                                        Text(text = stringResource(R.string.confirm_service_delete_title))
+                                    },
+                                    text = {
+                                        Text(text = stringResource(R.string.confirm_delete_service_text))
+                                    },
+                                    confirmButton = {
+                                        TextButton(onClick = { viewModel.onEvent(ServicesEvent.OnDeleteService(serviceId = service.id)) }) {
+                                            Text(text = stringResource(R.string.confirm))
+                                        }
 
+                                    },
+                                    dismissButton = {
+                                        TextButton(onClick = { viewModel.onEvent(ServicesEvent.OnDismissAlert) }) {
+                                            Text(text = stringResource(R.string.dismiss))
+                                        }
+
+                                    },
+                                    onDismissRequest = {
+                                        viewModel.onEvent(ServicesEvent.OnDismissAlert)
+                                    }
+                                )
                             }
                         }
                     }
@@ -178,7 +234,9 @@ fun ServicesScreen(
 
                         Spacer(modifier = Modifier.height(30.dp))
 
-                        IconButton(onClick = { viewModel.onEvent(ServicesEvent.OnReload)}) {
+                        IconButton(onClick = {
+                            viewModel.onEvent(ServicesEvent.OnReload)
+                        }) {
                             Icon(
                                 Icons.Filled.Refresh,
                                 stringResource(R.string.try_again),

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
 import com.example.salonapp.common.SessionManager
+import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.use_cases.get_salons.GetSalonsByOwnerIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -29,7 +30,10 @@ class  ScheduleViewModel @Inject constructor(
     val events = eventChannel.receiveAsFlow()
 
     init {
+        initialize()
+    }
 
+    private fun initialize(){
         val userID: Int? = sessionManager.fetchUserId()
 
         if (userID != null){
@@ -48,7 +52,13 @@ class  ScheduleViewModel @Inject constructor(
                         )
 
                         if (!result.data.isNullOrEmpty()){
-                            onEvent(ScheduleEvent.OnSetActiveSalon(result.data[0]))
+
+                            val salonID = sessionManager.fetchSalonId()
+                            val activeSalon: Salon =
+                                if (salonID != null) result.data.first { it.id == salonID }
+                                else result.data[0]
+
+                            onEvent(ScheduleEvent.OnSetActiveSalon(activeSalon))
                         }
                         else{
                             eventChannel.send(ScheduleEvent.OnCreateSalon)
@@ -65,9 +75,7 @@ class  ScheduleViewModel @Inject constructor(
         }else{
             _state.value = ScheduleState(error = "User id could not be fetched.")
         }
-
     }
-
 
     fun onEvent(event: ScheduleEvent) {
         when(event) {
@@ -83,6 +91,8 @@ class  ScheduleViewModel @Inject constructor(
                     salonSelectionExpanded = false,
                     employees = event.salon.employees
                 )
+
+                sessionManager.saveSalonId(event.salon.id)
 
                 if (!event.salon.employees.isNullOrEmpty()){
                     _state.value = _state.value.copy(
@@ -108,6 +118,9 @@ class  ScheduleViewModel @Inject constructor(
             }
             is ScheduleEvent.OnWeekChanged -> {
                 _state.value = _state.value.copy(currentWeek = event.newWeek)
+            }
+            is ScheduleEvent.OnInitialize -> {
+                initialize()
             }
 
         }

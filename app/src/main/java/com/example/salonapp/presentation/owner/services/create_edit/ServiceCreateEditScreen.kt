@@ -1,11 +1,8 @@
-package com.example.salonapp.presentation.owner.services.create
+package com.example.salonapp.presentation.owner.services.create_edit
 
 
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,37 +11,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
+import com.example.salonapp.common.Utils
 import com.example.salonapp.presentation.components.screenLogoAndTitle
-import com.example.salonapp.presentation.owner.salon_create.SalonCreateEvent
-import com.example.salonapp.presentation.owner.schedule.noRippleClickable
-import com.example.salonapp.presentation.owner.services.ServicesEvent
 
 @Composable
-fun ServicesCreateScreen(
-    viewModel: ServiceCreateViewModel = hiltViewModel(),
-    onCreateService: () -> Unit,
-    onCreateSalon: () -> Unit,
-    onEditService: (id:Int) -> Unit
+fun ServicesCreateEditScreen(
+    viewModel: ServiceCreateEditViewModel = hiltViewModel(),
+    serviceId: Int?,
+    onServiceCreatedOrEdited: () -> Unit,
 ){
+
     val state = viewModel.state.value
     val focusManager = LocalFocusManager.current
 
@@ -53,10 +44,21 @@ fun ServicesCreateScreen(
     LaunchedEffect(key1 = LocalContext.current) {
         viewModel.events.collect { event ->
             when (event) {
+                is ServiceCreateEditEvent.ServiceCreatedOrEditedSuccessfully -> {
+                    onServiceCreatedOrEdited()
+                }
 
             }
         }
     }
+
+    DisposableEffect(key1 = viewModel) {
+        viewModel.onEvent(ServiceCreateEditEvent.Initialize(serviceId))
+        onDispose {  }
+    }
+
+
+
 
     val arrangement = if (state.isLoading) Arrangement.Top else Arrangement.SpaceBetween
 
@@ -70,7 +72,9 @@ fun ServicesCreateScreen(
         verticalArrangement = arrangement
     )
     {
-        screenLogoAndTitle(currentScreenTitle = stringResource(R.string.create_salon))
+
+        val screenTitle = if(serviceId != null) stringResource(R.string.service_edit) else stringResource(R.string.create_service)
+        screenLogoAndTitle(currentScreenTitle = screenTitle)
 
         if (state.isLoading) {
             Spacer(modifier = Modifier.height(100.dp))
@@ -79,11 +83,12 @@ fun ServicesCreateScreen(
                     .height(100.dp)
                     .width(100.dp))
         } else {
+            Spacer(modifier = Modifier.height(50.dp))
 
             OutlinedTextField(
                 value = state.name,
                 onValueChange = {
-                    viewModel.onEvent(ServiceCreateEvent.NameChanged(it))
+                    viewModel.onEvent(ServiceCreateEditEvent.NameChanged(it))
                 },
                 isError = state.nameError != null,
                 modifier = Modifier
@@ -114,7 +119,7 @@ fun ServicesCreateScreen(
             OutlinedTextField(
                 value = state.description,
                 onValueChange = {
-                    viewModel.onEvent(ServiceCreateEvent.DescriptionChanged(it))
+                    viewModel.onEvent(ServiceCreateEditEvent.DescriptionChanged(it))
                 },
                 isError = state.descriptionError != null,
                 modifier = Modifier
@@ -144,7 +149,7 @@ fun ServicesCreateScreen(
 
             OutlinedTextField(
                 value = state.price,
-                onValueChange = { viewModel.onEvent(ServiceCreateEvent.PriceChanged(it))
+                onValueChange = { viewModel.onEvent(ServiceCreateEditEvent.PriceChanged(it))
                 },
                 isError = state.priceError != null,
                 modifier = Modifier
@@ -174,7 +179,7 @@ fun ServicesCreateScreen(
 
             OutlinedTextField(
                 value = state.durationInMinutes,
-                onValueChange = {viewModel.onEvent(ServiceCreateEvent.DurationChanged(it))},
+                onValueChange = {viewModel.onEvent(ServiceCreateEditEvent.DurationChanged(it))},
                 isError = state.durationError != null,
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -203,7 +208,7 @@ fun ServicesCreateScreen(
 
             OutlinedTextField(
                 value = state.pauseStartInMinutes,
-                onValueChange = {viewModel.onEvent(ServiceCreateEvent.PauseStartChanged(it))},
+                onValueChange = {viewModel.onEvent(ServiceCreateEditEvent.PauseStartChanged(it))},
                 isError = state.pauseError != null,
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -220,11 +225,11 @@ fun ServicesCreateScreen(
                 label = { Text(text = stringResource(R.string.service_pause_start))}
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = state.pauseEndInMinutes,
-                onValueChange = {viewModel.onEvent(ServiceCreateEvent.PauseEndChanged(it))},
+                onValueChange = {viewModel.onEvent(ServiceCreateEditEvent.PauseEndChanged(it))},
                 isError = state.pauseError != null,
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -252,14 +257,15 @@ fun ServicesCreateScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
 
-            Box(modifier = Modifier.fillMaxWidth()){
+            Box{
                 var enabled = true
                 if (state.selectableEmployees.isEmpty()) enabled = false
 
                 FilledTonalButton(enabled = enabled,
                     onClick = {
-                        viewModel.onEvent(ServiceCreateEvent.OnToggleEmployeeMenu)
-                    }
+                        viewModel.onEvent(ServiceCreateEditEvent.OnToggleEmployeeMenu)
+                    },
+                    modifier = Modifier.align(Alignment.Center)
                 ){
                     Text(stringResource(R.string.add_employee))
                 }
@@ -267,14 +273,14 @@ fun ServicesCreateScreen(
                 DropdownMenu(
                     expanded = state.employeeSelectionExpanded,
                     onDismissRequest = {
-                        viewModel.onEvent(ServiceCreateEvent.OnEmployeeSelectDismiss)
+                        viewModel.onEvent(ServiceCreateEditEvent.OnEmployeeSelectDismiss)
                     }
                 ) {
                     state.selectableEmployees.forEachIndexed(){ index, employee ->
                         DropdownMenuItem(
-                            text = {Text(text = employee.firstName)},
+                            text = {Text(text = Utils.formatName(employee.firstName, employee.lastName))},
                             onClick = {
-                                viewModel.onEvent(ServiceCreateEvent.AddEmployee(index))
+                                viewModel.onEvent(ServiceCreateEditEvent.AddEmployee(index))
                             }
                         )
                     }
@@ -285,12 +291,14 @@ fun ServicesCreateScreen(
 
             Column(modifier = Modifier.fillMaxWidth()) {
 
-                state.selectedEmployees.forEachIndexed(){index, user ->
+                state.selectedEmployees.forEachIndexed(){ index, employee ->
 
-                    Row(modifier = Modifier.fillMaxWidth()){
-                        Text(user.firstName + " " + user.lastName[0].uppercaseChar() + ".")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+                    ){
+                        Text(Utils.formatName(employee.firstName, employee.lastName))
 
-                        IconButton(onClick = { viewModel.onEvent(ServiceCreateEvent.RemoveEmployee(index)) }) {
+                        IconButton(onClick = { viewModel.onEvent(ServiceCreateEditEvent.RemoveEmployee(index)) }) {
                             Icon(Icons.Filled.Clear, stringResource(R.string.employee_remove))
                         }
                     }
@@ -305,14 +313,14 @@ fun ServicesCreateScreen(
             Spacer(modifier = Modifier.height(50.dp))
 
             Button(
-                onClick = { viewModel.onEvent(ServiceCreateEvent.Submit) },
+                onClick = { viewModel.onEvent(ServiceCreateEditEvent.Submit) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
             )
             {
-                androidx.compose.material3.Text(
-                    text =  stringResource(R.string.service_create),
+                Text(
+                    text =  stringResource(R.string.save_changes),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )

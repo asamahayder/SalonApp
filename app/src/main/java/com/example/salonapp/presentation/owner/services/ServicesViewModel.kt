@@ -6,10 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.salonapp.common.Resource
 import com.example.salonapp.common.SessionManager
+import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.use_cases.get_salons.GetSalonsByOwnerIdUseCase
+import com.example.salonapp.domain.use_cases.services.delete_service.DeleteServiceUseCase
 import com.example.salonapp.domain.use_cases.services.get_services.GetServicesBySalonIdUseCase
 import com.example.salonapp.presentation.owner.schedule.ScheduleEvent
 import com.example.salonapp.presentation.owner.schedule.ScheduleState
+import com.example.salonapp.presentation.owner.services.create_edit.ServiceCreateEditEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -21,6 +24,7 @@ import javax.inject.Inject
 class  ServicesViewModel @Inject constructor(
     private val getSalonsByOwnerIdUseCase: GetSalonsByOwnerIdUseCase,
     private val getServicesBySalonIdUseCase: GetServicesBySalonIdUseCase,
+    private val deleteServiceUseCase: DeleteServiceUseCase,
     private val sessionManager: SessionManager
 
 ) : ViewModel(){
@@ -43,10 +47,17 @@ class  ServicesViewModel @Inject constructor(
             getSalonsByOwnerIdUseCase(userID).onEach {result ->
                 when(result){
                     is Resource.Success -> {
+
+                        val salonID = sessionManager.fetchSalonId()
+                        val activeSalon: Salon? =
+                            if (salonID != null) result.data?.first { it.id == salonID }
+                            else result.data?.get(0)
+
+
                         _state.value = _state.value.copy(
                             isLoading = false,
                             salons = result.data ?: listOf(),
-                            activeSalon = result.data?.get(0)
+                            activeSalon = activeSalon
                         )
 
                         getServices()
@@ -91,14 +102,8 @@ class  ServicesViewModel @Inject constructor(
 
     fun onEvent(event: ServicesEvent) {
         when(event) {
-            is ServicesEvent.OnCreateService ->{
-
-            }
-            is ServicesEvent.OnEditService ->{
-
-            }
             is ServicesEvent.OnDeleteService ->{
-
+                deleteService(event.serviceId)
             }
             is ServicesEvent.OnReload -> {
                 initialize()
@@ -120,7 +125,44 @@ class  ServicesViewModel @Inject constructor(
             is ServicesEvent.OnSalonSelectDismiss -> {
                 _state.value = _state.value.copy(salonSelectionExpanded = false)
             }
+            is ServicesEvent.OnInitialize -> {
+                initialize()
+            }
+            is ServicesEvent.OnShowAlert -> {
+                _state.value = _state.value.copy(showDeleteAlert = true)
+            }
+            is ServicesEvent.OnDismissAlert -> {
+                _state.value = _state.value.copy(showDeleteAlert = false)
+            }
+
         }
+    }
+
+    private fun deleteService(serviceId:Int){
+        deleteServiceUseCase(serviceId = serviceId).onEach {result ->
+            when(result){
+                is Resource.Success -> {
+                    _state.value = _state.value.copy(
+                        services = result.data!!,
+                        error = "",
+                        isLoading = false,
+                        showDeleteAlert = false
+                    )
+                }
+                is Resource.Error -> {
+                    _state.value = _state.value.copy(
+                        error = result.message ?: "Unexpected error occurred",
+                        isLoading = false
+                    )
+                }
+                is Resource.Loading -> {
+                    _state.value = _state.value.copy(isLoading = true)
+                }
+            }
+
+
+        }.launchIn(viewModelScope)
+
     }
 
 }

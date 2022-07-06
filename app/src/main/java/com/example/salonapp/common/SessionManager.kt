@@ -17,6 +17,19 @@ class SessionManager(
         const val USER_TOKEN = "user_token"
         const val USER_ID = "user_id"
         const val SALON_ID = "active_salon_id"
+        const val EMPLOYEE_ID = "active_employee_id"
+    }
+
+    fun saveEmployeeId(id: Int){
+        val editor = prefs.edit()
+        editor.putString(EMPLOYEE_ID, id.toString())
+        editor.apply()
+    }
+
+    fun fetchEmployeeId(): Int? {
+        val idString: String = prefs.getString(EMPLOYEE_ID, Constants.EMPLOYEE_ID_NOT_FOUND)!!
+
+        return if (idString != Constants.EMPLOYEE_ID_NOT_FOUND) idString.toInt() else null
     }
 
     fun saveSalonId(id: Int){

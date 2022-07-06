@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
+import com.example.salonapp.common.Utils
 import com.example.salonapp.presentation.components.Schedule.Schedule
+import com.example.salonapp.presentation.owner.services.ServicesEvent
 import java.time.LocalDateTime
 
 inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier =
@@ -50,6 +53,11 @@ fun ScheduleScreen(
                 }
             }
         }
+    }
+
+    DisposableEffect(key1 = viewModel) {
+        viewModel.onEvent(ScheduleEvent.OnInitialize)
+        onDispose {  }
     }
 
     if (state.isLoading){
@@ -146,7 +154,7 @@ fun ScheduleScreen(
                 Box(modifier = Modifier.weight(.45f)){
                     if (!state.activeSalon?.employees.isNullOrEmpty()){
                         OutlinedTextField(
-                            value = createEmployeeName(state.activeEmployee?.firstName, state.activeEmployee?.lastName),
+                            value = Utils.formatName(state.activeEmployee?.firstName, state.activeEmployee?.lastName),
                             onValueChange = {},
                             label = {
                                 Text(text = stringResource(R.string.employee))
@@ -185,7 +193,8 @@ fun ScheduleScreen(
                         ) {
                             state.activeSalon?.employees?.forEach{ employee ->
                                 DropdownMenuItem(
-                                    text = {Text(text = createEmployeeName(employee.firstName, employee.lastName))},
+
+                                    text = {Text(text = Utils.formatName(employee.firstName, employee.lastName))},
                                     onClick = {
                                         viewModel.onEvent(ScheduleEvent.OnSetActiveEmployee(employee))
                                     }
@@ -221,22 +230,13 @@ fun ScheduleScreen(
                         viewModel.onEvent(ScheduleEvent.OnWeekChanged(it))
                     },
                     onCreateBook = {
-
+                        onCreateBooking()
                     }
                 )
             }
 
         }
     }
-}
-
-
-private fun createEmployeeName(firstName: String?, lastName: String?): String{
-    if (firstName == null || lastName == null) return ""
-
-    val firstLetterOfLastName = lastName[0].uppercaseChar()
-
-    return "$firstName $firstLetterOfLastName."
 }
 
 

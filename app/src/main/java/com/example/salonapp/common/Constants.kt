@@ -13,5 +13,6 @@ object Constants {
 
     const val USER_ID_NOT_FOUND = "user id not found"
     const val SALON_ID_NOT_FOUND = "salon id not found"
+    const val EMPLOYEE_ID_NOT_FOUND = "employee id not found"
 
 }

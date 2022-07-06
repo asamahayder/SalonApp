@@ -13,5 +13,5 @@ data class ServicesState (
     val activeSalon: Salon? = null,
     val salonSelectionExpanded: Boolean = false,
     val salonSelectionWidth: Size = Size.Zero,
-
+    val showDeleteAlert: Boolean = false
     )

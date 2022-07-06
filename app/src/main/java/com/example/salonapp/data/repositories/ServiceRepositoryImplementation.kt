@@ -10,7 +10,8 @@ import javax.inject.Inject
 
 class ServiceRepositoryImplementation @Inject constructor(
     private val api: ServiceAPI,
-    private val salonRepository: SalonRepository
+    private val salonRepository: SalonRepository,
+    private val userRepository: UserRepository
 ): ServicesRepository
 {
 
@@ -56,6 +57,8 @@ class ServiceRepositoryImplementation @Inject constructor(
 
         val salon = salonRepository.getSalonById(serviceDTO.salonId)
 
+        val employees = serviceDTO.employeesIds.map { userRepository.getUserById(it)}
+
         return Service(
             id = serviceDTO.id,
             name = serviceDTO.name,
@@ -65,7 +68,7 @@ class ServiceRepositoryImplementation @Inject constructor(
             pauseEndInMinutes = serviceDTO.pauseEndInMinutes,
             price = serviceDTO.price,
             salon = salon,
-            employees = salon.employees
+            employees = employees
         )
     }
 

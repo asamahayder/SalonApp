@@ -1,9 +1,9 @@
-package com.example.salonapp.presentation.owner.services.create
+package com.example.salonapp.presentation.owner.services.create_edit
 
 import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.models.User
 
-data class ServiceCreateState (
+data class ServiceCreateEditState (
 
     val salon: Salon? = null,
     val name: String = "",
@@ -24,7 +24,9 @@ data class ServiceCreateState (
     val pauseError: String? = null,
 
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+
+    val serviceId: Int? = null
 
 
 )

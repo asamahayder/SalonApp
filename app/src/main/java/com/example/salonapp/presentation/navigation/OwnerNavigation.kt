@@ -17,7 +17,8 @@ import com.example.salonapp.presentation.owner.profile.ProfileScreen
 import com.example.salonapp.presentation.owner.salon_create.SalonCreateScreen
 import com.example.salonapp.presentation.owner.schedule.ScheduleScreen
 import com.example.salonapp.presentation.owner.services.ServicesScreen
-import com.example.salonapp.presentation.owner.services.create.ServicesCreateScreen
+import com.example.salonapp.presentation.owner.services.create_edit.ServicesCreateEditScreen
+import java.lang.NumberFormatException
 
 @Composable
 fun OwnerNavGraph(navController: NavHostController) {
@@ -38,10 +39,11 @@ fun OwnerNavGraph(navController: NavHostController) {
         composable(route = BottomNavScreen.Services.route) {
             ServicesScreen(
                 onCreateService = {
-                                  navController.navigate(OwnerScreen.ServiceCreate.route)
+                    navController.navigate(OwnerScreen.ServiceCreate.route + "/null")
 
                 },
-                onEditService = {
+                onEditService = { serviceId ->
+                    navController.navigate(OwnerScreen.ServiceCreate.route + "/" + serviceId)
 
                 },
                 onCreateSalon = {
@@ -63,6 +65,7 @@ fun OwnerNavGraph(navController: NavHostController) {
                 navController.popBackStack()
                 navController.navigate(BottomNavScreen.Schedule.route)
             })
+
         }
 
         composable(route = OwnerScreen.BookingCreate.route) {
@@ -72,15 +75,35 @@ fun OwnerNavGraph(navController: NavHostController) {
             })
         }
 
-        composable(route = OwnerScreen.ServiceCreate.route){
-            ServicesCreateScreen(
-                onCreateService = {  },
-                onCreateSalon = {  },
-                onEditService = {
 
+        composable(route = OwnerScreen.ServiceCreate.route + "/{serviceId}") {backStackEntry ->
+
+            var serviceID: Int?
+            try {
+                serviceID = backStackEntry.arguments?.getString("serviceId")?.toInt()
+            }catch (e: NumberFormatException){
+                serviceID = null
+            }
+
+
+
+            ServicesCreateEditScreen(
+                serviceId = serviceID,
+                onServiceCreatedOrEdited = {
+                    navController.popBackStack()
+                    navController.navigate(BottomNavScreen.Services.route)
                 }
             )
         }
+
+//        composable(route = OwnerScreen.ServiceCreate.route){
+//            ServicesCreateScreen(
+//                onServiceCreated = {
+//                    navController.popBackStack()
+//                    navController.navigate(BottomNavScreen.Services.route)
+//                }
+//            )
+//        }
 
     }
 }
