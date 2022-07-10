@@ -7,6 +7,7 @@ import com.example.salonapp.domain.repositories.BookingRepository
 import com.example.salonapp.domain.repositories.ServicesRepository
 import com.example.salonapp.domain.repositories.UserRepository
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class BookingRepositoryImplementation @Inject constructor(
@@ -33,7 +34,8 @@ class BookingRepositoryImplementation @Inject constructor(
     }
 
     override suspend fun createBooking(booking: Booking): List<Booking> {
-        return api.createBooking(toDTO(booking)).map { toModel(it) }
+        val dto = toDTO(booking)
+        return api.createBooking(dto).map { toModel(it) }
     }
 
     override suspend fun updateBooking(booking: Booking): List<Booking> {
@@ -51,7 +53,7 @@ class BookingRepositoryImplementation @Inject constructor(
             customerId = booking.customer?.id,
             employeeId = booking.employee.id,
             serviceId = booking.service.id,
-            startTime = booking.startTime.toString(),
+            startTime = booking.startTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).toString(),
             endTime = booking.endTime.toString(),
             note = booking.note
         )

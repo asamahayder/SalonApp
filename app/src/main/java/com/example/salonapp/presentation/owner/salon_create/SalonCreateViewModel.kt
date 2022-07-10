@@ -9,7 +9,7 @@ import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
 import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.models.ValidationResult
-import com.example.salonapp.domain.use_cases.create_salon.CreateSalonUseCase
+import com.example.salonapp.domain.use_cases.salons.CreateSalonUseCase
 import com.example.salonapp.domain.use_cases.validations.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel

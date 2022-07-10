@@ -1,4 +1,4 @@
-package com.example.salonapp.domain.use_cases.get_salon
+package com.example.salonapp.domain.use_cases.salons
 
 import com.example.salonapp.common.Resource
 import com.example.salonapp.domain.models.Salon
@@ -9,14 +9,14 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class GetSalonUseCase @Inject constructor(
+class UpdateSalonUseCase @Inject constructor(
     private val repository: SalonRepository
 ){
-    operator fun invoke(id: Int): Flow<Resource<Salon>> = flow {
+    operator fun invoke(salon: Salon): Flow<Resource<List<Salon>>> = flow {
         try {
             emit(Resource.Loading())
-            val salon = repository.getSalonById(id)
-            emit(Resource.Success(salon))
+            val salons = repository.updateSalon(salon)
+            emit(Resource.Success(salons))
         }catch (e: HttpException){
             emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
         }catch (e: IOException){

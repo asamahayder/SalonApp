@@ -1,4 +1,4 @@
-package com.example.salonapp.domain.use_cases.login
+package com.example.salonapp.domain.use_cases.authentication
 
 import com.example.salonapp.common.Resource
 import com.example.salonapp.common.SessionManager

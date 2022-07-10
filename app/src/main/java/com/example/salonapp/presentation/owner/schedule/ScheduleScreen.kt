@@ -8,10 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -26,8 +23,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
 import com.example.salonapp.common.Utils
 import com.example.salonapp.presentation.components.Schedule.Schedule
-import com.example.salonapp.presentation.owner.services.ServicesEvent
-import java.time.LocalDateTime
 
 inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier =
     composed {
@@ -225,14 +220,15 @@ fun ScheduleScreen(
                 }
             }else{
                 Schedule(
-                    listOf(),
+                    bookings = state.bookings,
                     onWeekChanged = {
                         viewModel.onEvent(ScheduleEvent.OnWeekChanged(it))
                     },
-                    onCreateBook = {
+                    onCreateBooking = {
                         onCreateBooking()
                     }
                 )
+
             }
 
         }

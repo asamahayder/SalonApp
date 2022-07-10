@@ -19,6 +19,29 @@ class Utils {
             return "$newFirstName $lastnameFirstChar."
 
         }
+
+        fun formatFullName(firstName: String?, lastname:String?): String{
+            if (firstName.isNullOrEmpty() || lastname.isNullOrEmpty()){
+                return "NameError"
+            }
+
+            var firstNameFirstChar = firstName[0].uppercaseChar()
+
+            var firstNameWithoutFirstChar = firstName.substring(1)
+
+            var lastNameFirstChar = lastname[0].uppercaseChar()
+
+            var lastNameWithoutFirstChar = lastname.substring(1)
+
+
+            var newFirstName = firstNameFirstChar + firstNameWithoutFirstChar
+
+            var newLastName = lastNameFirstChar + lastNameWithoutFirstChar
+
+
+            return "$newFirstName $newLastName"
+
+        }
     }
 
 }

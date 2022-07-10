@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
 import com.example.salonapp.domain.models.UserLogin
-import com.example.salonapp.domain.use_cases.login.LoginUseCase
+import com.example.salonapp.domain.use_cases.authentication.LoginUseCase
 import com.example.salonapp.domain.use_cases.user.get_user.GetUserUseCase
 import com.example.salonapp.domain.use_cases.validations.ValidateEmailUseCase
 import com.example.salonapp.domain.use_cases.validations.ValidatePasswordUseCase
@@ -27,7 +27,7 @@ class  LoginViewModel @Inject constructor(
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validatePasswordUseCase: ValidatePasswordUseCase,
 
-) : ViewModel(){
+    ) : ViewModel(){
 
     private val _state = mutableStateOf(LoginState())
     val state: State<LoginState> = _state

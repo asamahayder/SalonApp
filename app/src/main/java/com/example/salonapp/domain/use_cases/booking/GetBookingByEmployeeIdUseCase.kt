@@ -1,0 +1,28 @@
+package com.example.salonapp.domain.use_cases.booking
+
+import com.example.salonapp.common.Resource
+import com.example.salonapp.domain.models.Booking
+import com.example.salonapp.domain.repositories.BookingRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+import java.io.IOException
+import javax.inject.Inject
+
+class GetBookingByEmployeeIdUseCase @Inject constructor(
+    private val repository: BookingRepository,
+){
+    operator fun invoke(employeeId:Int): Flow<Resource<List<Booking>>> = flow {
+        try {
+            emit(Resource.Loading())
+
+            val response = repository.getBookingsByEmployeeId(employeeId)
+
+            emit(Resource.Success(data = response))
+        }catch (e: HttpException){
+            emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
+        }catch (e: IOException){
+            emit(Resource.Error("Couldn't reach server. Check your internet connection. \n" + e.localizedMessage))
+        }
+    }
+}

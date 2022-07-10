@@ -9,8 +9,8 @@ import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
 import com.example.salonapp.domain.models.UserLogin
 import com.example.salonapp.domain.models.UserRegister
-import com.example.salonapp.domain.use_cases.login.LoginUseCase
-import com.example.salonapp.domain.use_cases.register.RegisterUseCase
+import com.example.salonapp.domain.use_cases.authentication.LoginUseCase
+import com.example.salonapp.domain.use_cases.authentication.RegisterUseCase
 import com.example.salonapp.domain.use_cases.validations.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel

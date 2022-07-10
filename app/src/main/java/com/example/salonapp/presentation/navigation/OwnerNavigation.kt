@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.salonapp.R
+import com.example.salonapp.presentation.components.booking.BookingCreateEditScreen
 import com.example.salonapp.presentation.owner.employees.EmployeesScreen
 import com.example.salonapp.presentation.owner.profile.ProfileScreen
 import com.example.salonapp.presentation.owner.salon_create.SalonCreateScreen
@@ -53,11 +54,16 @@ fun OwnerNavGraph(navController: NavHostController) {
         }
 
         composable(route = BottomNavScreen.Employees.route) {
-            EmployeesScreen()
+            EmployeesScreen(
+                onCreateSalon = {
+                navController.navigate(OwnerScreen.SalonCreate.route)
+            })
         }
 
         composable(route = BottomNavScreen.Profile.route) {
-            ProfileScreen()
+            ProfileScreen(onEditSalon = {
+
+            })
         }
 
         composable(route = OwnerScreen.SalonCreate.route) {
@@ -69,10 +75,13 @@ fun OwnerNavGraph(navController: NavHostController) {
         }
 
         composable(route = OwnerScreen.BookingCreate.route) {
-            SalonCreateScreen(onSalonCreated = {
-                navController.popBackStack()
-                navController.navigate(BottomNavScreen.Schedule.route)
-            })
+            BookingCreateEditScreen(
+//                bookingId = null,
+//                onBookingCreatedOrUpdated = {
+//                    navController.popBackStack()
+//                    navController.navigate(BottomNavScreen.Schedule.route)
+//                }
+            )
         }
 
 

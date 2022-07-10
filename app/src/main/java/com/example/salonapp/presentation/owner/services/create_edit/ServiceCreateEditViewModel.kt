@@ -10,7 +10,7 @@ import com.example.salonapp.common.Resource
 import com.example.salonapp.common.SessionManager
 import com.example.salonapp.domain.models.Service
 import com.example.salonapp.domain.models.ValidationResult
-import com.example.salonapp.domain.use_cases.get_salon.GetSalonUseCase
+import com.example.salonapp.domain.use_cases.salons.GetSalonUseCase
 import com.example.salonapp.domain.use_cases.services.create_service.CreateServiceUseCase
 import com.example.salonapp.domain.use_cases.services.get_service.GetServiceByIdUseCase
 import com.example.salonapp.domain.use_cases.services.update_service.UpdateServiceUseCase

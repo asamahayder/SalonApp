@@ -1,4 +1,4 @@
-package com.example.salonapp.domain.use_cases.create_salon
+package com.example.salonapp.domain.use_cases.salons
 
 import com.example.salonapp.common.Resource
 import com.example.salonapp.domain.models.Salon
@@ -9,18 +9,21 @@ import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class CreateSalonUseCase @Inject constructor(
+class GetSalonsByOwnerIdUseCase @Inject constructor(
     private val repository: SalonRepository
 ){
-    operator fun invoke(salon: Salon): Flow<Resource<List<Salon>>> = flow {
+    operator fun invoke(id: Int): Flow<Resource<List<Salon>>> = flow {
         try {
             emit(Resource.Loading())
-            val salons = repository.createSalon(salon)
+            val salons = repository.getSalonsByOwnerId(id)
             emit(Resource.Success(salons))
         }catch (e: HttpException){
-            emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred"))
+            emit(Resource.Error(
+                e.localizedMessage ?: ("An unexpected error occurred. ")
+            ))
         }catch (e: IOException){
-            emit(Resource.Error("Couldn't reach server. Check your internet connection."))
+            emit(Resource.Error("Couldn't reach server. Check your internet connection. "))
         }
+
     }
 }

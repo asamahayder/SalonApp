@@ -9,7 +9,8 @@ import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
 import com.example.salonapp.common.SessionManager
 import com.example.salonapp.domain.models.Salon
-import com.example.salonapp.domain.use_cases.get_salons.GetSalonsByOwnerIdUseCase
+import com.example.salonapp.domain.use_cases.booking.GetBookingByEmployeeIdUseCase
+import com.example.salonapp.domain.use_cases.salons.GetSalonsByOwnerIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -20,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class  ScheduleViewModel @Inject constructor(
     private val getSalonsByOwnerIdUseCase: GetSalonsByOwnerIdUseCase,
+    private val getBookingByEmployeeIdUseCase: GetBookingByEmployeeIdUseCase,
     private val sessionManager: SessionManager
 ) : ViewModel(){
 
@@ -59,6 +61,11 @@ class  ScheduleViewModel @Inject constructor(
                                 else result.data[0]
 
                             onEvent(ScheduleEvent.OnSetActiveSalon(activeSalon))
+
+                            if (_state.value.activeSalon?.employees?.isNotEmpty() == true){
+                                onEvent(ScheduleEvent.OnSetActiveEmployee(_state.value.activeSalon!!.employees[0]))
+                            }
+
                         }
                         else{
                             eventChannel.send(ScheduleEvent.OnCreateSalon)
@@ -109,6 +116,8 @@ class  ScheduleViewModel @Inject constructor(
             }
             is ScheduleEvent.OnSetActiveEmployee -> {
                 _state.value = _state.value.copy(activeEmployee = event.employee, employeeSelectionExpanded = false)
+                sessionManager.saveEmployeeId(event.employee.id)
+                getBookings(event.employee.id)
             }
             is ScheduleEvent.OnSetSalonSelectionWidth -> {
                 _state.value = _state.value.copy(salonSelectionWidth = event.width)
@@ -122,8 +131,27 @@ class  ScheduleViewModel @Inject constructor(
             is ScheduleEvent.OnInitialize -> {
                 initialize()
             }
+            is ScheduleEvent.OnSetZoom -> {
+                _state.value = _state.value.copy(scale = event.scale)
+            }
 
         }
+    }
+
+    private fun getBookings(employeeId:Int){
+        getBookingByEmployeeIdUseCase(employeeId).onEach {result ->
+            when(result){
+                is Resource.Success -> {
+                    _state.value = _state.value.copy(isLoading = false, bookings = result.data!!)
+                }
+                is Resource.Loading -> {
+                    _state.value = _state.value.copy(isLoading = true)
+                }
+                is Resource.Error -> {
+                    _state.value = _state.value.copy(isLoading = false, error = result.message ?: "Unknown error")
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
 }

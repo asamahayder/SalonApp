@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.salonapp.presentation.customer.MainScreenCustomer
-import com.example.salonapp.presentation.employee.MainScreenEmployee
+import com.example.salonapp.presentation.employee.schedule.EmployeeScheduleScreen
 import com.example.salonapp.presentation.owner.MainScreenOwner
 
 
@@ -19,11 +19,9 @@ fun RootNavigationGraph(navController: NavHostController) {
         startDestination = Graph.AUTHENTICATION
     ) {
         authNavGraph(navController = navController)
+        employeeNavGraph(navController = navController)
         composable(route = Graph.OWNER) {
             MainScreenOwner()
-        }
-        composable(route = Graph.EMPLOYEE) {
-            MainScreenEmployee()
         }
         composable(route = Graph.CUSTOMER) {
             MainScreenCustomer()

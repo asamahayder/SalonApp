@@ -95,4 +95,9 @@ dependencies {
 
     //more icons
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
+    //Material Date and Time dialog from community, as jetpack compose still does not have it implemented.
+    implementation "io.github.vanpra.compose-material-dialogs:datetime:0.8.0-beta"
+
+
 }

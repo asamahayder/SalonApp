@@ -4,7 +4,9 @@ import androidx.compose.ui.geometry.Size
 import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.models.Service
 import com.example.salonapp.presentation.owner.schedule.ScheduleEvent
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 sealed class BookingCreateEditEvent {
 
@@ -12,9 +14,9 @@ sealed class BookingCreateEditEvent {
     object OnServiceSelectDismiss: BookingCreateEditEvent()
     data class OnSetActiveService(val service: Service): BookingCreateEditEvent()
 
-    object OnToggleDateTimeMenu: BookingCreateEditEvent()
-    object OnDateTimeSelectDismiss: BookingCreateEditEvent()
-    data class OnSetDateTimeService(val dateString: String): BookingCreateEditEvent()
+
+    data class OnSetDate(val date: LocalDate): BookingCreateEditEvent()
+    data class OnSetTime(val time: LocalTime): BookingCreateEditEvent()
 
     data class OnNoteChanged(val note: String): BookingCreateEditEvent()
 
@@ -23,4 +25,8 @@ sealed class BookingCreateEditEvent {
     data class Initialize(val bookingId: Int?): BookingCreateEditEvent()
 
     data class OnSetServiceSelectionWidth(val width: Size): BookingCreateEditEvent()
+
+    object OnNextStep: BookingCreateEditEvent()
+
+    object OnFetchedHours: BookingCreateEditEvent()
 }

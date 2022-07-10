@@ -9,9 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowLeft
-import androidx.compose.material.icons.filled.ArrowRight
-import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,6 +34,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
 import com.example.salonapp.common.Constants
 import com.example.salonapp.domain.models.Booking
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -316,10 +316,11 @@ sealed class ScheduleSize {
     class Adaptive(val minSize: Dp) : ScheduleSize()
 }
 
+
 @Composable
 fun Schedule(
     bookings: List<Booking>,
-    onCreateBook: () -> Unit,
+    onCreateBooking: () -> Unit,
     onWeekChanged: (newWeek: LocalDateTime) -> Unit,
     modifier: Modifier = Modifier,
     bookingContent: @Composable (positionedBooking: PositionedBooking) -> Unit = { BasicBooking(positionedBooking = it) },
@@ -328,12 +329,12 @@ fun Schedule(
     minTime: LocalTime = LocalTime.MIN,
     maxTime: LocalTime = LocalTime.MAX,
     daySize: ScheduleSize = ScheduleSize.FixedSize(256.dp),
-    hourSize: ScheduleSize = ScheduleSize.FixedSize(64.dp),
+
     viewModel: ScheduleViewModel = hiltViewModel()
 ) {
 
     val minDate = viewModel.state.value.currentWeek.with(DayOfWeek.MONDAY).toLocalDate()?: LocalDate.now()
-    val maxDate = viewModel.state.value.currentWeek.plusDays(6).toLocalDate() ?: LocalDate.now()
+    val maxDate = minDate.plusDays(6) ?: LocalDate.now()
 
     val numDays = ChronoUnit.DAYS.between(minDate, maxDate).toInt() + 1
     val numMinutes = ChronoUnit.MINUTES.between(minTime, maxTime).toInt() + 1
@@ -342,6 +343,16 @@ fun Schedule(
     val horizontalScrollState = rememberScrollState()
     var sidebarWidth by remember { mutableStateOf(0) }
     var headerHeight by remember { mutableStateOf(0) }
+
+    var percentageDown by remember{ mutableStateOf(0f)}
+    val scope = rememberCoroutineScope()
+
+
+    val defaultHourSize = 128
+
+    var scale by remember { mutableStateOf(1f)}
+    val hourSize = ScheduleSize.FixedSize((defaultHourSize*scale).toInt().dp)
+
 
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -390,11 +401,14 @@ fun Schedule(
                     is ScheduleSize.FixedCount -> with(LocalDensity.current) { ((constraints.maxWidth - sidebarWidth) / daySize.count).toDp() }
                     is ScheduleSize.Adaptive -> with(LocalDensity.current) { maxOf(((constraints.maxWidth - sidebarWidth) / numDays).toDp(), daySize.minSize) }
                 }
-                val hourHeight: Dp = when (hourSize) {
-                    is ScheduleSize.FixedSize -> hourSize.size
-                    is ScheduleSize.FixedCount -> with(LocalDensity.current) { ((constraints.maxHeight - headerHeight) / hourSize.count).toDp() }
-                    is ScheduleSize.Adaptive -> with(LocalDensity.current) { maxOf(((constraints.maxHeight - headerHeight) / numHours).toDp(), hourSize.minSize) }
-                }
+
+                val hourHeight: Dp = hourSize.size
+
+//                val hourHeight: Dp = when (hourSize) {
+//                    is ScheduleSize.FixedSize -> hourSize.size
+//                    is ScheduleSize.FixedCount -> with(LocalDensity.current) { ((constraints.maxHeight - headerHeight) / hourSize.count).toDp() }
+//                    is ScheduleSize.Adaptive -> with(LocalDensity.current) { maxOf(((constraints.maxHeight - headerHeight) / numHours).toDp(), hourSize.minSize) }
+//                }
                 Column(modifier = modifier) {
                     ScheduleHeader(
                         minDate = minDate,
@@ -437,15 +451,65 @@ fun Schedule(
             }
         }
 
-        ExtendedFloatingActionButton(
-            onClick = { onCreateBook() },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(12.dp)
-        ) {
-            Icon(Icons.Filled.Create, stringResource(R.string.add_booking))
-            Text(text = stringResource(R.string.add_booking))
+        Column(modifier = Modifier.align(Alignment.BottomEnd), horizontalAlignment = Alignment.End) {
+
+
+
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(12.dp),
+                onClick = {
+                    if (scale < 5){
+                        scale += 0.5f
+
+                        val verticalScrollPosition = verticalScrollState.value
+                        val verticalMaxPosition = verticalScrollState.maxValue
+                        percentageDown = verticalScrollPosition.toFloat()/verticalMaxPosition.toFloat()
+
+                        scope.launch {
+                            delay(100)
+                            val newMax = verticalScrollState.maxValue
+                            val newPosition = percentageDown*newMax
+                            verticalScrollState.scrollTo(newPosition.toInt())
+                        }
+                    }
+                }
+            ) {
+                Icon(Icons.Filled.ZoomIn, stringResource(R.string.zoom_in))
+            }
+            FloatingActionButton(
+                modifier = Modifier
+                    .padding(12.dp),
+                onClick = {
+                    if (scale > 0.5){
+                        scale -= 0.5f
+                        val verticalScrollPosition = verticalScrollState.value
+                        val verticalMaxPosition = verticalScrollState.maxValue
+                        percentageDown = verticalScrollPosition.toFloat()/verticalMaxPosition.toFloat()
+
+                        scope.launch {
+                            delay(100)
+                            val newMax = verticalScrollState.maxValue
+                            val newPosition = percentageDown*newMax
+                            verticalScrollState.scrollTo(newPosition.toInt())
+                        }
+                    }
+                }
+            ) {
+                Icon(Icons.Filled.ZoomOut, stringResource(R.string.zoom_out))
+            }
+
+            ExtendedFloatingActionButton(
+                onClick = { onCreateBooking() },
+                modifier = Modifier
+                    .padding(12.dp)
+            ) {
+                Icon(Icons.Filled.Create, stringResource(R.string.add_booking))
+                Text(text = stringResource(R.string.add_booking))
+            }
         }
+
+
 
     }
 

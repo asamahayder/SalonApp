@@ -1,8 +1,12 @@
 package com.example.salonapp.data.repositories
 
+import com.example.salonapp.data.dtos.EmployeeDTO
 import com.example.salonapp.data.dtos.UserDTO
 import com.example.salonapp.data.remote.UserAPI
+import com.example.salonapp.domain.models.Employee
+import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.models.User
+import com.example.salonapp.domain.repositories.SalonRepository
 import com.example.salonapp.domain.repositories.UserRepository
 import javax.inject.Inject
 
@@ -16,6 +20,10 @@ class UserRepositoryImplementation @Inject constructor(
 
     override suspend fun getUserById(id: Int): User {
         return toModel(api.getUserById(id))
+    }
+
+    override suspend fun geEmployeeById(employeeId: Int): Employee {
+        return toModel(api.getEmployeeById(employeeId))
     }
 
     override suspend fun getUserByBookingId(bookingId: Int): User {
@@ -41,6 +49,19 @@ class UserRepositoryImplementation @Inject constructor(
         )
     }
 
+    private fun toModel(employeeDTO: EmployeeDTO): Employee{
+
+        return Employee(
+            id = employeeDTO.id,
+            salonId = employeeDTO.salonId,
+            firstName = employeeDTO.firstName,
+            lastName = employeeDTO.lastName,
+            email = employeeDTO.email,
+            phone = employeeDTO.phone,
+            role = employeeDTO.role
+        )
+    }
+
     private fun toDTO(user: User): UserDTO{
         return UserDTO(
             email = user.email,
@@ -51,5 +72,6 @@ class UserRepositoryImplementation @Inject constructor(
             role = user.role
         )
     }
+
 
 }

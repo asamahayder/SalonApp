@@ -8,6 +8,7 @@ import com.example.salonapp.domain.repositories.RequestRepository
 import com.example.salonapp.domain.repositories.SalonRepository
 import com.example.salonapp.domain.repositories.UserRepository
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class RequestRepositoryImplementation @Inject constructor(
@@ -53,7 +54,7 @@ class RequestRepositoryImplementation @Inject constructor(
         return Request(
             id = requestDTO.id,
             employee = employee,
-            date = LocalDateTime.parse(requestDTO.date),
+            date = LocalDateTime.parse(requestDTO.date, DateTimeFormatter.ISO_DATE_TIME),
             requestStatus = RequestStatus.values()[requestDTO.requestStatus],
             salon = salon
         )

@@ -22,4 +22,6 @@ sealed class ScheduleEvent {
 
     data class OnWeekChanged(val newWeek: LocalDateTime): ScheduleEvent()
 
+    data class OnSetZoom(val scale: Int): ScheduleEvent()
+
 }
