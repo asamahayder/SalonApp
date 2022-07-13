@@ -82,8 +82,8 @@ fun BasicBooking(
     val booking = positionedBooking.booking
     val topRadius = if (positionedBooking.splitType == SplitType.Start || positionedBooking.splitType == SplitType.Both) 0.dp else 4.dp
     val bottomRadius = if (positionedBooking.splitType == SplitType.End || positionedBooking.splitType == SplitType.Both) 0.dp else 4.dp
-    val color = if(booking.bookedBy.role == Constants.ROLE_CUSTOMER) Color(0xFF995C1B) else Color(
-        0xFF65991B
+    val color = if(booking.customer != null) Color(0xFF15C3E2) else Color(
+        0xFFB5D818
     )
 
     Column(
