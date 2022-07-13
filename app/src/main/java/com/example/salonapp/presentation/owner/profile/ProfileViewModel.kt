@@ -6,12 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.salonapp.common.Resource
 import com.example.salonapp.common.SessionManager
-import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.use_cases.salons.GetSalonsByOwnerIdUseCase
-import com.example.salonapp.domain.use_cases.requests.GetRequestsBySalonIdUseCase
-import com.example.salonapp.domain.use_cases.services.delete_service.DeleteServiceUseCase
-import com.example.salonapp.domain.use_cases.user.get_user.GetUserUseCase
-import com.example.salonapp.presentation.owner.services.ServicesEvent
+import com.example.salonapp.domain.use_cases.user.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn

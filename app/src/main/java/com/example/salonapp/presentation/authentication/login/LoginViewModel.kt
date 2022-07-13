@@ -9,7 +9,7 @@ import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
 import com.example.salonapp.domain.models.UserLogin
 import com.example.salonapp.domain.use_cases.authentication.LoginUseCase
-import com.example.salonapp.domain.use_cases.user.get_user.GetUserUseCase
+import com.example.salonapp.domain.use_cases.user.GetUserUseCase
 import com.example.salonapp.domain.use_cases.validations.ValidateEmailUseCase
 import com.example.salonapp.domain.use_cases.validations.ValidatePasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

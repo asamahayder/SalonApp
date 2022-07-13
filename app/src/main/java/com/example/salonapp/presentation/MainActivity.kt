@@ -22,9 +22,17 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    RootNavigationGraph(navController = rememberNavController())
+                    RootNavigationGraph(navController = rememberNavController(), onLogOut = {
+                        restart()
+                    })
                 }
             }
         }
+    }
+
+    private fun restart(){
+        val mIntent = intent
+        finish()
+        startActivity(mIntent)
     }
 }

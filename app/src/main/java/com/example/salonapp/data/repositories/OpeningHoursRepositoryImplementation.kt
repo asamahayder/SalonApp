@@ -7,7 +7,9 @@ import com.example.salonapp.domain.models.OpeningHours
 import com.example.salonapp.domain.models.SpecialOpeningHours
 import com.example.salonapp.domain.repositories.OpeningHoursRepository
 import com.example.salonapp.domain.repositories.UserRepository
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import javax.inject.Inject
 
 class OpeningHoursRepositoryImplementation @Inject constructor(
@@ -50,29 +52,33 @@ class OpeningHoursRepositoryImplementation @Inject constructor(
         return api.deleteSpecialOpeningHours(week.toString()).map { toModel(it) }
     }
 
+    fun LocalTime.toLocalDateTime(): LocalDateTime{
+        return LocalDateTime.of(LocalDate.now(), this)
+    }
+
     private fun toDTO(openingHours: OpeningHours): OpeningHoursDTO{
         return OpeningHoursDTO(
             employeeId = openingHours.employee.id,
-            mondayStart = openingHours.mondayStart.toString(),
-            mondayEnd = openingHours.mondayEnd.toString(),
+            mondayStart = openingHours.mondayStart.toLocalDateTime().toString(),
+            mondayEnd = openingHours.mondayEnd.toLocalDateTime().toString(),
             mondayOpen = openingHours.mondayOpen,
-            tuesdayStart = openingHours.tuesdayStart.toString(),
-            tuesdayEnd = openingHours.tuesdayEnd.toString(),
+            tuesdayStart = openingHours.tuesdayStart.toLocalDateTime().toString(),
+            tuesdayEnd = openingHours.tuesdayEnd.toLocalDateTime().toString(),
             tuesdayOpen = openingHours.tuesdayOpen,
-            wednessdayStart = openingHours.wednessdayStart.toString(),
-            wednessdayEnd = openingHours.wednessdayEnd.toString(),
+            wednessdayStart = openingHours.wednessdayStart.toLocalDateTime().toString(),
+            wednessdayEnd = openingHours.wednessdayEnd.toLocalDateTime().toString(),
             wednessdayOpen = openingHours.wednessdayOpen,
-            thursdayStart = openingHours.thursdayStart.toString(),
-            thursdayEnd = openingHours.thursdayEnd.toString(),
+            thursdayStart = openingHours.thursdayStart.toLocalDateTime().toString(),
+            thursdayEnd = openingHours.thursdayEnd.toLocalDateTime().toString(),
             thursdayOpen = openingHours.thursdayOpen,
-            fridayStart = openingHours.fridayStart.toString(),
-            fridayEnd = openingHours.fridayEnd.toString(),
+            fridayStart = openingHours.fridayStart.toLocalDateTime().toString(),
+            fridayEnd = openingHours.fridayEnd.toLocalDateTime().toString(),
             fridayOpen = openingHours.fridayOpen,
-            saturdayStart = openingHours.saturdayStart.toString(),
-            saturdayEnd = openingHours.saturdayEnd.toString(),
+            saturdayStart = openingHours.saturdayStart.toLocalDateTime().toString(),
+            saturdayEnd = openingHours.saturdayEnd.toLocalDateTime().toString(),
             saturdayOpen = openingHours.saturdayOpen,
-            sundayStart = openingHours.sundayStart.toString(),
-            sundayEnd = openingHours.sundayEnd.toString(),
+            sundayStart = openingHours.sundayStart.toLocalDateTime().toString(),
+            sundayEnd = openingHours.sundayEnd.toLocalDateTime().toString(),
             sundayOpen = openingHours.sundayOpen,
         )
     }
@@ -111,26 +117,26 @@ class OpeningHoursRepositoryImplementation @Inject constructor(
         
         return OpeningHours(
             employee = employee,
-            mondayStart = LocalDateTime.parse(openingHoursDTO.mondayStart),
-            mondayEnd = LocalDateTime.parse(openingHoursDTO.mondayEnd),
+            mondayStart = LocalDateTime.parse(openingHoursDTO.mondayStart).toLocalTime(),
+            mondayEnd = LocalDateTime.parse(openingHoursDTO.mondayEnd).toLocalTime(),
             mondayOpen = openingHoursDTO.mondayOpen,
-            tuesdayStart = LocalDateTime.parse(openingHoursDTO.tuesdayStart),
-            tuesdayEnd = LocalDateTime.parse(openingHoursDTO.tuesdayEnd),
+            tuesdayStart = LocalDateTime.parse(openingHoursDTO.tuesdayStart).toLocalTime(),
+            tuesdayEnd = LocalDateTime.parse(openingHoursDTO.tuesdayEnd).toLocalTime(),
             tuesdayOpen = openingHoursDTO.tuesdayOpen,
-            wednessdayStart = LocalDateTime.parse(openingHoursDTO.wednessdayStart),
-            wednessdayEnd = LocalDateTime.parse(openingHoursDTO.wednessdayEnd),
+            wednessdayStart = LocalDateTime.parse(openingHoursDTO.wednessdayStart).toLocalTime(),
+            wednessdayEnd = LocalDateTime.parse(openingHoursDTO.wednessdayEnd).toLocalTime(),
             wednessdayOpen = openingHoursDTO.wednessdayOpen,
-            thursdayStart = LocalDateTime.parse(openingHoursDTO.thursdayStart),
-            thursdayEnd = LocalDateTime.parse(openingHoursDTO.thursdayEnd),
+            thursdayStart = LocalDateTime.parse(openingHoursDTO.thursdayStart).toLocalTime(),
+            thursdayEnd = LocalDateTime.parse(openingHoursDTO.thursdayEnd).toLocalTime(),
             thursdayOpen = openingHoursDTO.thursdayOpen,
-            fridayStart = LocalDateTime.parse(openingHoursDTO.fridayStart),
-            fridayEnd = LocalDateTime.parse(openingHoursDTO.fridayEnd),
+            fridayStart = LocalDateTime.parse(openingHoursDTO.fridayStart).toLocalTime(),
+            fridayEnd = LocalDateTime.parse(openingHoursDTO.fridayEnd).toLocalTime(),
             fridayOpen = openingHoursDTO.fridayOpen,
-            saturdayStart = LocalDateTime.parse(openingHoursDTO.saturdayStart),
-            saturdayEnd = LocalDateTime.parse(openingHoursDTO.saturdayEnd),
+            saturdayStart = LocalDateTime.parse(openingHoursDTO.saturdayStart).toLocalTime(),
+            saturdayEnd = LocalDateTime.parse(openingHoursDTO.saturdayEnd).toLocalTime(),
             saturdayOpen = openingHoursDTO.saturdayOpen,
-            sundayStart = LocalDateTime.parse(openingHoursDTO.sundayStart),
-            sundayEnd = LocalDateTime.parse(openingHoursDTO.sundayEnd),
+            sundayStart = LocalDateTime.parse(openingHoursDTO.sundayStart).toLocalTime(),
+            sundayEnd = LocalDateTime.parse(openingHoursDTO.sundayEnd).toLocalTime(),
             sundayOpen = openingHoursDTO.sundayOpen,
         )
     }

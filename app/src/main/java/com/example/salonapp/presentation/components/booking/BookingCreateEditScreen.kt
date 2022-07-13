@@ -2,414 +2,458 @@ package com.example.salonapp.presentation.components.booking
 
 
 
-import androidx.compose.foundation.Canvas
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ListItem
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
+import com.example.salonapp.common.SessionManager
+import com.example.salonapp.common.Utils
+import com.example.salonapp.domain.models.isOpen
 import com.example.salonapp.presentation.components.screenLogoAndTitle
-import com.example.salonapp.presentation.owner.salon_create.SalonCreateEvent
-import com.example.salonapp.presentation.owner.schedule.noRippleClickable
+import com.example.salonapp.presentation.employee.hours.HoursEditEvent
+import com.example.salonapp.presentation.employee.hours.noRippleClickable
+import com.example.salonapp.presentation.employee.request.RequestScreenEvent
 import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
-import java.time.Duration
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 
-//@Composable
-//fun StepIcon(
-//    step: Step,
-//    viewModel: BookingCreateEditViewModel = hiltViewModel()
-//){
-//    //TODO: undersøg om det virker, eller om det giver problemer at give den sin egen viewmodel
-//
-//    Box{
-//        val color1 = MaterialTheme.colorScheme.onSurface
-//        var color2 = MaterialTheme.colorScheme.onPrimary
-//
-//        if (step.getIntValue() == viewModel.state.value.activeStep.getIntValue()){
-//            color2 = MaterialTheme.colorScheme.onSurface
-//            Canvas(modifier = Modifier
-//                .size(100.dp)
-//                .align(Alignment.Center),
-//                onDraw = {
-//                    drawCircle(color = color1)
-//                }
-//            )
-//
-//        }
-//
-//        Text(text = step.getStringValue(),
-//            modifier = Modifier.align(Alignment.Center),
-//            textAlign = TextAlign.Center,
-//            color = color2
-//        )
-//    }
-//
-//}
+inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier =
+    composed {
+        clickable(indication = null,
+            interactionSource = remember { MutableInteractionSource() }) {
+            onClick()
+        }.wrapContentWidth()
+    }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BookingCreateEditScreen(){
-
-}
-
-
-/*@Composable
 fun BookingCreateEditScreen(
     viewModel: BookingCreateEditViewModel = hiltViewModel(),
-    bookingId: Int?,
+    bookingId:Int? = null,
     onBookingCreatedOrUpdated: () -> Unit,
+    onReturnToPreviousScreen: () -> Unit
 ){
-
     val state = viewModel.state.value
-    val dateDialogState = rememberMaterialDialogState()
-    val timeDialogState = rememberMaterialDialogState()
-
-    MaterialDialog(
-        dialogState = dateDialogState,
-        buttons = {
-            positiveButton("Ok")
-            negativeButton("Cancel")
-        }
-    ) {
-
-        datepicker(
-            allowedDateValidator = {date ->
-            !date.isBefore(LocalDate.now())
-        }) { date ->
-            viewModel.onEvent(BookingCreateEditEvent.OnSetDate(date))
-        }
-    }
 
 
-
-    MaterialDialog(
-        dialogState = timeDialogState,
-        buttons = {
-            positiveButton("Ok")
-            negativeButton("Cancel")
-        }
-    ) {
-
-        if (state.date != null && state.startTimeOfDay != null && state.endTimeOfDay != null){
-            var startTime: LocalTime
-            var timeRange: ClosedRange<LocalTime>
-
-            if (state.date.isEqual(LocalDate.now())){
-                if (LocalTime.now().isAfter(state.startTimeOfDay)){
-                    startTime = LocalTime.now()
-                }else{
-                    startTime = state.startTimeOfDay
-                }
-            }else if (state.date.isAfter(LocalDate.now())){
-                startTime = state.startTimeOfDay
-            }else{
-                startTime = LocalTime.MIDNIGHT
-            }
-
-            if(startTime == LocalTime.MIDNIGHT){
-                //Just getting empty range
-                timeRange = LocalTime.now().rangeTo(LocalTime.now().minusSeconds(5))
-            }else{
-
-                var endTime:LocalTime
-
-                if (state.selectedService != null){
-                    endTime = state.endTimeOfDay.minusMinutes(state.selectedService.durationInMinutes.toLong())
-                }else{
-                    endTime = state.endTimeOfDay
-                }
-
-                timeRange = startTime.rangeTo(endTime)
-            }
-
-            timepicker(is24HourClock = true, timeRange = timeRange.) { time ->
-                viewModel.onEvent(BookingCreateEditEvent.OnSetTime(time))
-            }
-
-        }
-
-    }
-
-    val focusManager = LocalFocusManager.current
-
-    val context = LocalContext.current
-
-    LaunchedEffect(key1 = context) {
+    LaunchedEffect(key1 = LocalContext.current) {
         viewModel.events.collect { event ->
             when (event) {
-                is BookingCreateEditEvent.OnBookingCreatedOrUpdated -> {
+                is BookingCreateEditEvent.OnSubmitSuccess -> {
                     onBookingCreatedOrUpdated()
                 }
-                is BookingCreateEditEvent.OnFetchedHours -> {
-                    timeDialogState.show()
+                is BookingCreateEditEvent.OnReturnToPreviousScreen -> {
+                    onReturnToPreviousScreen()
                 }
             }
         }
     }
 
     DisposableEffect(key1 = viewModel) {
-        viewModel.onEvent(BookingCreateEditEvent.Initialize(bookingId))
+        viewModel.onEvent(BookingCreateEditEvent.OnInitialize(bookingId = bookingId))
         onDispose {  }
     }
 
-
-    val arrangement = if (state.isLoading || state.services.isEmpty()) Arrangement.Top else Arrangement.SpaceBetween
+    BackHandler {
+        viewModel.onEvent(BookingCreateEditEvent.OnBack)
+    }
 
     Column(
         Modifier
-            .fillMaxHeight()
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 50.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = arrangement
-    )
-    {
+            .fillMaxSize()
+            .padding(horizontal = 20.dp, vertical = 50.dp), horizontalAlignment = Alignment.CenterHorizontally) {
 
-        val screenTitle = if(bookingId != null) stringResource(R.string.save_changes) else stringResource(R.string.booking_create)
-        screenLogoAndTitle(currentScreenTitle = screenTitle)
-        Spacer(modifier = Modifier.height(75.dp))
+        val title = if(bookingId != null) "Update Booking" else "Create Booking"
+
+        screenLogoAndTitle(currentScreenTitle = title)
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Box(modifier = Modifier.fillMaxSize()) {
+
+            if (state.isLoading) {
+
+                CircularProgressIndicator(
+                    Modifier
+                        .height(100.dp)
+                        .width(100.dp)
+                        .align(Alignment.Center)
+                )
+
+            } else if (state.error != null) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center)
+                ) {
+
+                    Text(text = stringResource(R.string.try_again_error_message))
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    IconButton(onClick = { viewModel.onEvent(BookingCreateEditEvent.OnInitialize(bookingId = bookingId)) }) {
+                        Icon(
+                            Icons.Filled.Refresh,
+                            contentDescription = stringResource(id = R.string.try_again)
+                        )
+                    }
+
+                }
 
 
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                Modifier
-                    .height(100.dp)
-                    .width(100.dp))
+            } else {
 
-        }
-        else if (state.error != null){
-            Text(text = state.error,
-                textAlign = TextAlign.Center
-            )
-        }
-        else if(state.services.isEmpty()) {
-            Text(text = stringResource(R.string.employee_need_service),
-                textAlign = TextAlign.Center
-            )
-        }
-        else {
+                Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    when(state.activeStep){
+                        1 -> {
+                            Spacer(modifier = Modifier.height(20.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                StepIcon(step = Step.one)
-                Icon(Icons.Filled.ArrowRightAlt, contentDescription = stringResource(R.string.next_step_icon))
-                StepIcon(step = Step.two)
-                Icon(Icons.Filled.ArrowRightAlt, contentDescription = stringResource(R.string.next_step_icon))
-                StepIcon(step = Step.three)
-                Icon(Icons.Filled.ArrowRightAlt, contentDescription = stringResource(R.string.next_step_icon))
-                StepIcon(step = Step.four)
-            }
+                            Text(text = "Choose Salon", fontWeight = FontWeight.Bold, fontSize = 20.sp)
 
-            when(state.activeStep.getIntValue()){
-                1 -> {
-                    Box{
-                        OutlinedTextField(
-                            value = state.selectedService?.name ?: "",
-                            onValueChange = {},
-                            label = {
-                                Text(text = stringResource(R.string.service))
-                            },
-                            trailingIcon = {
-                                if (state.serviceSelectionExpanded){
-                                    Icon(Icons.Filled.ArrowDropUp, contentDescription = stringResource(R.string.dropdown_collapse))
-                                }else{
-                                    Icon(Icons.Filled.ArrowDropDown, contentDescription = stringResource(R.string.dropdown_expand))
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Divider()
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+
+                            if(state.salons.isEmpty()){
+                                Text(text = "No salons to show", fontWeight = FontWeight.Light, fontSize = 15.sp)
+                            }
+
+                            LazyColumn{
+                                items(state.salons){salon ->
+                                    ListItem(
+                                        modifier = Modifier.clickable {
+                                            viewModel.onEvent(BookingCreateEditEvent.OnInitializeEmployees(salon))
+                                        },
+                                        text = {
+                                            Text(
+                                                text = salon.name,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        },
+                                        secondaryText = {
+                                            val address = "${salon.postCode} ${salon.city} - ${salon.streetName} ${salon.streetNumber}"
+                                            Text(
+                                                text = address,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                fontStyle = FontStyle.Italic,
+                                                fontWeight = FontWeight.Light
+                                            )
+                                        },
+                                        singleLineSecondaryText = true
+                                    )
+
                                 }
-                            },
-                            singleLine = true,
-                            readOnly = true,
-                            enabled = false,
-                            modifier = Modifier
-                                .noRippleClickable { viewModel.onEvent(BookingCreateEditEvent.OnToggleServiceMenu) }
-                                .onGloballyPositioned { coordinates ->
-                                    viewModel.onEvent(
-                                        BookingCreateEditEvent.OnSetServiceSelectionWidth(
-                                            coordinates.size.toSize()
-                                        )
+
+                            }
+
+                        }
+                        2 -> {
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(text = "Choose Employee", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Divider()
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            if(state.employees.isEmpty()){
+                                Text(text = "No employees to show", fontWeight = FontWeight.Light, fontSize = 15.sp)
+                            }
+
+                            LazyColumn{
+                                items(state.employees){employee ->
+                                    ListItem(
+                                        modifier = Modifier.clickable {
+                                            viewModel.onEvent(BookingCreateEditEvent.OnInitializeServices(employee = employee))
+                                        },
+                                        text = {
+                                            Text(
+                                                text = Utils.formatFullName(employee.firstName, employee.lastName),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    )
+
+                                }
+
+                            }
+
+                        }
+                        3 -> {
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(text = "Choose Service", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Divider()
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            if(state.services.isEmpty()){
+                                Text(text = "No services to show", fontWeight = FontWeight.Light, fontSize = 15.sp)
+                            }
+
+                            LazyColumn{
+                                items(state.services){service ->
+                                    ListItem(
+                                        modifier = Modifier.clickable {
+                                            viewModel.onEvent(BookingCreateEditEvent.OnInitializeDates(service = service))
+                                        },
+                                        text = {
+                                            Text(
+                                                text = service.name,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        },
+                                        secondaryText = {
+                                            Text(
+                                                text = service.price.toString() + "kr. - " + service.description,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                fontStyle = FontStyle.Italic,
+                                                fontWeight = FontWeight.Light
+                                            )
+                                        },
+                                        singleLineSecondaryText = true
                                     )
                                 }
-                            ,
-                            colors = TextFieldDefaults.textFieldColors(
-                                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                disabledIndicatorColor = MaterialTheme.colorScheme.outline,
-                                containerColor = Color.Transparent
-                            )
-                        )
 
-                        DropdownMenu(
-                            expanded = state.serviceSelectionExpanded,
-                            onDismissRequest = {
-                                viewModel.onEvent(BookingCreateEditEvent.OnServiceSelectDismiss)
-                            },
-                            modifier = Modifier.width(with(LocalDensity.current){state.serviceSelectionWidth.width.toDp()})
-                        ) {
-                            state.services.forEach{service ->
-                                DropdownMenuItem(
-                                    text = {Text(text = service.name)},
-                                    onClick = {
-                                        viewModel.onEvent(BookingCreateEditEvent.OnSetActiveService(service))
+                            }
+
+                        }
+                        4 -> {
+                            val dateDialogState = rememberMaterialDialogState()
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(text = "Choose Date", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Divider()
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            OutlinedTextField(
+                                value = if(state.chosenDate != null) state.chosenDate.toString() else "",
+                                onValueChange = {},
+                                label = {
+                                    Text(text = stringResource(R.string.date))
+                                },
+                                singleLine = true,
+                                readOnly = true,
+                                enabled = false,
+                                modifier = Modifier
+                                    .noRippleClickable { dateDialogState.show() }
+                                ,
+                                colors = TextFieldDefaults.textFieldColors(
+                                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    disabledIndicatorColor = MaterialTheme.colorScheme.outline,
+                                    containerColor = Color.Transparent
+                                )
+                            )
+
+                            MaterialDialog(
+                                dialogState = dateDialogState,
+                                buttons = {
+                                    positiveButton("Ok")
+                                    negativeButton("Cancel")
+                                }
+                            ) {
+
+                                datepicker(
+                                    allowedDateValidator = {
+                                        (it.isAfter(LocalDate.now().minusDays(1))) && (state.openingHours?.isOpen(it) ?: false)
+                                    }
+                                ) { date ->
+                                    viewModel.onEvent(BookingCreateEditEvent.OnInitializeTimes(date))
+                                }
+
+                            }
+
+                        }
+                        5 -> {
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(text = "Choose Time", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Divider()
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            if(state.availableTimes.isEmpty()){
+                                Text(text = "No available times", fontWeight = FontWeight.Light, fontSize = 15.sp)
+                            }
+
+                            LazyColumn{
+                                items(state.availableTimes){time ->
+                                    ListItem(
+                                        modifier = Modifier.clickable {
+                                            viewModel.onEvent(BookingCreateEditEvent.OnInitializeSummary(time))
+                                        },
+                                        text = {
+                                            Text(
+                                                text = time.toString(),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    )
+                                }
+
+                            }
+
+                        }
+                        6 -> {
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            Text(text = "Summary", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Divider()
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+                                Column {
+                                    Text(text = "Salon: ")
+                                    Text(text = "Employee: ")
+                                    Text(text = "Service: ")
+                                    Text(text = "Date: ")
+                                    Text(text = "Time: ")
+                                }
+                                Spacer(modifier = Modifier.width(20.dp))
+                                Column {
+                                    Text(text = state.chosenSalon?.name ?: "null", maxLines = 1, overflow = TextOverflow.Ellipsis)
+
+                                    val chosenEmployee = state.chosenEmployee
+                                    val employeeName =
+                                        if(chosenEmployee != null) {
+                                            Utils.formatFullName(chosenEmployee.firstName, chosenEmployee.lastName)
+                                        }else{
+                                            "null"
+                                        }
+
+                                    Text(text = employeeName)
+                                    Text(text = state.chosenService?.name ?: "null", maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Text(text = state.chosenDate?.toString() ?: "null", maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Text(text = state.chosenTime?.toString() ?: "null", maxLines = 1, overflow = TextOverflow.Ellipsis)
+
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            if (state.booking != null){
+                                Text(text = "Hint: Press android back button to go to previous steps.", textAlign = TextAlign.Center)
+                            }
+
+                            Spacer(modifier = Modifier.height(40.dp))
+
+                            //Button
+                            FilledTonalButton(
+                                onClick = {
+                                    viewModel.onEvent(BookingCreateEditEvent.OnSubmit)
+                                }
+                            ) {
+                                var buttonText = if(state.booking != null) "Save Changes" else "Create Booking"
+                                Text(text = buttonText)
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            if (state.booking != null){
+                                TextButton(onClick = { viewModel.onEvent(BookingCreateEditEvent.OnShowDeleteAlert) }) {
+                                    Text(text = "Delete Booking", color = MaterialTheme.colorScheme.error)
+                                }
+                            }
+
+                            if(state.showDeleteAlert){
+                                AlertDialog(
+                                    title = {
+                                        Text(text = "Delete Booking")
+                                    },
+                                    text = {
+                                        Text(text = "Are you sure you want to delete this booking?")
+                                    },
+                                    confirmButton = {
+                                        TextButton(onClick = { viewModel.onEvent(BookingCreateEditEvent.OnDeleteBooking) }) {
+                                            Text(text = stringResource(R.string.confirm))
+                                        }
+                                    },
+                                    dismissButton = {
+                                        TextButton(onClick = {  viewModel.onEvent(BookingCreateEditEvent.OnDismissDeleteAlert)  }) {
+                                            Text(text = stringResource(R.string.dismiss))
+                                        }
+
+                                    },
+                                    onDismissRequest = {
+                                        viewModel.onEvent(BookingCreateEditEvent.OnDismissDeleteAlert)
                                     }
                                 )
                             }
-                        }
-                    }
 
 
-
-                }
-                2 -> {
-                    OutlinedTextField(
-                        value = if(state.date != null) state.date.format(DateTimeFormatter.ofPattern("dd/MM-y")).toString() else "",
-                        onValueChange = {},
-                        label = {
-                            Text(text = stringResource(R.string.date))
-                        },
-                        singleLine = true,
-                        readOnly = true,
-                        enabled = false,
-                        modifier = Modifier
-                            .noRippleClickable {
-                                dateDialogState.show()
-                            }
-                        ,
-                        colors = TextFieldDefaults.textFieldColors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledIndicatorColor = if (state.dateError == null) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.error,
-                            containerColor = Color.Transparent
-                        ),
-                        isError = state.dateError != null
-                    )
-
-                    if (state.dateError != null) {
-                        Text(
-                            text = state.dateError,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.align(Alignment.End)
-                        )
-                    }
-                }
-                3 -> {
-                    var timeValue:String =
-                        if (state.fetchingOpeningHours){
-                            stringResource(R.string.please_wait)
-                        }else{
-                            state.time?.format(DateTimeFormatter.ofPattern("HH:mm")).toString()
                         }
 
-                    if (timeValue == "null") timeValue = ""
 
-                    OutlinedTextField(
-                        value = timeValue,
-                        onValueChange = {},
-                        label = {
-                            Text(text = stringResource(R.string.time))
-                        },
-                        singleLine = true,
-                        readOnly = true,
-                        enabled = false,
-                        modifier = Modifier
-                            .noRippleClickable {
-                                if(!state.fetchingOpeningHours){
-                                    timeDialogState.show()
-                                }
-                            }
-                        ,
-                        colors = TextFieldDefaults.textFieldColors(
-                            disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            disabledIndicatorColor = if (state.timeError == null) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.error,
-                            containerColor = Color.Transparent
-                        )
-                    )
 
-                    if (state.timeError != null) {
-                        Text(
-                            text = state.timeError,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.align(Alignment.End)
-                        )
                     }
-                }
-                4 -> {
-
 
                 }
+
             }
-
-
-
-
-
-
-
-
-
-            Spacer(modifier = Modifier.height(50.dp))
-
-            Button(
-                onClick = {
-                    if (state.activeStep.getIntValue() == 4){
-                        viewModel.onEvent(BookingCreateEditEvent.Submit)
-                    }else{
-                        viewModel.onEvent(BookingCreateEditEvent.OnNextStep)
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-            )
-            {
-
-                val text:String = if (state.activeStep.getIntValue() == 4){
-                    stringResource(id = R.string.booking_create)
-                }else{
-                    stringResource(R.string.next_step)
-                }
-
-                Text(
-                    text =  text,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
         }
-
     }
 
-}*/
+}
 
 
 

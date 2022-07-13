@@ -3,6 +3,7 @@ package com.example.salonapp.data.repositories
 import com.example.salonapp.data.dtos.BookingDTO
 import com.example.salonapp.data.remote.BookingAPI
 import com.example.salonapp.domain.models.Booking
+import com.example.salonapp.domain.models.toUser
 import com.example.salonapp.domain.repositories.BookingRepository
 import com.example.salonapp.domain.repositories.ServicesRepository
 import com.example.salonapp.domain.repositories.UserRepository
@@ -55,7 +56,8 @@ class BookingRepositoryImplementation @Inject constructor(
             serviceId = booking.service.id,
             startTime = booking.startTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).toString(),
             endTime = booking.endTime.toString(),
-            note = booking.note
+            note = booking.note,
+            pairId = booking.pairId
         )
     }
 
@@ -65,7 +67,7 @@ class BookingRepositoryImplementation @Inject constructor(
         val customerId = bookingDTO.customerId
         val customer = if (customerId != null) userRepository.getUserById(customerId) else null
 
-        val employee = userRepository.getUserById(bookingDTO.employeeId)
+        val employee = userRepository.geEmployeeById(bookingDTO.employeeId).toUser()
 
         val service = servicesRepository.getService(bookingDTO.serviceId)
 
@@ -77,7 +79,8 @@ class BookingRepositoryImplementation @Inject constructor(
             service = service,
             startTime = LocalDateTime.parse(bookingDTO.startTime),
             endTime = LocalDateTime.parse(bookingDTO.endTime),
-            note = bookingDTO.note
+            note = bookingDTO.note,
+            pairId = bookingDTO.pairId
         )
     }
 

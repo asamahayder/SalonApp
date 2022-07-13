@@ -38,6 +38,15 @@ class SessionManager(
         editor.apply()
     }
 
+    fun clearSessionManager(){
+        val editor = prefs.edit()
+        editor.putString(SALON_ID, null)
+        editor.putString(USER_ID, null)
+        editor.putString(USER_TOKEN, null)
+        editor.putString(EMPLOYEE_ID, null)
+        editor.apply()
+    }
+
     fun fetchSalonId(): Int? {
         val idString: String = prefs.getString(SALON_ID, Constants.SALON_ID_NOT_FOUND)!!
 

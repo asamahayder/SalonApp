@@ -5,8 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.salonapp.common.Resource
-import com.example.salonapp.domain.use_cases.user.get_user.GetUserUseCase
-import com.example.salonapp.presentation.components.profile.salon_card.SalonCardEvent
+import com.example.salonapp.domain.use_cases.user.GetUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -18,7 +17,7 @@ import javax.inject.Inject
 class  ProfileCardViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
 
-) : ViewModel(){
+    ) : ViewModel(){
 
     private val _state = mutableStateOf(ProfileCardState())
     val state: State<ProfileCardState> = _state

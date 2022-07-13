@@ -1,11 +1,8 @@
 package com.example.salonapp.presentation.components.Schedule
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -33,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
 import com.example.salonapp.common.Constants
+import com.example.salonapp.common.Utils
 import com.example.salonapp.domain.models.Booking
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -79,11 +77,12 @@ val BookingTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm
 fun BasicBooking(
     positionedBooking: PositionedBooking,
     modifier: Modifier = Modifier,
+    onEditBooking: (bookingId:Int) -> Unit,
 ) {
     val booking = positionedBooking.booking
     val topRadius = if (positionedBooking.splitType == SplitType.Start || positionedBooking.splitType == SplitType.Both) 0.dp else 4.dp
     val bottomRadius = if (positionedBooking.splitType == SplitType.End || positionedBooking.splitType == SplitType.Both) 0.dp else 4.dp
-    val color = if(booking.bookedBy.role == Constants.ROLE_CUSTOMER) Color(0xFF1B998B) else Color(
+    val color = if(booking.bookedBy.role == Constants.ROLE_CUSTOMER) Color(0xFF995C1B) else Color(
         0xFF65991B
     )
 
@@ -105,6 +104,7 @@ fun BasicBooking(
                 )
             )
             .padding(4.dp)
+            .clickable { onEditBooking(booking.id)}
     ) {
         Text(
             text = "${booking.startTime.format(BookingTimeFormatter)} - ${booking.endTime.format(
@@ -123,9 +123,9 @@ fun BasicBooking(
             overflow = TextOverflow.Ellipsis,
         )
 
-        if (booking.note != null) {
+        if (booking.customer != null) {
             Text(
-                text = booking.note,
+                text = Utils.formatFullName(booking.customer.firstName, booking.customer.lastName),
                 style = MaterialTheme.typography.body2,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -321,9 +321,10 @@ sealed class ScheduleSize {
 fun Schedule(
     bookings: List<Booking>,
     onCreateBooking: () -> Unit,
+    onEditBooking: (bookingId:Int) -> Unit,
     onWeekChanged: (newWeek: LocalDateTime) -> Unit,
     modifier: Modifier = Modifier,
-    bookingContent: @Composable (positionedBooking: PositionedBooking) -> Unit = { BasicBooking(positionedBooking = it) },
+    bookingContent: @Composable (positionedBooking: PositionedBooking) -> Unit = { BasicBooking(positionedBooking = it, onEditBooking = {bookingId -> onEditBooking(bookingId)}) },
     dayHeader: @Composable (day: LocalDate) -> Unit = { BasicDayHeader(day = it) },
     timeLabel: @Composable (time: LocalTime) -> Unit = { BasicSidebarLabel(time = it) },
     minTime: LocalTime = LocalTime.MIN,
@@ -444,7 +445,10 @@ fun Schedule(
                             modifier = Modifier
                                 .weight(1f)
                                 .verticalScroll(verticalScrollState)
-                                .horizontalScroll(horizontalScrollState)
+                                .horizontalScroll(horizontalScrollState),
+                            onEditBooking = {
+                                onEditBooking(it)
+                            }
                         )
                     }
                 }
@@ -523,7 +527,8 @@ fun Schedule(
 fun BasicSchedule(
     bookings: List<Booking>,
     modifier: Modifier = Modifier,
-    bookingContent: @Composable (positionedBooking: PositionedBooking) -> Unit = { BasicBooking(positionedBooking = it) },
+    onEditBooking: (bookingId: Int) -> Unit,
+    bookingContent: @Composable (positionedBooking: PositionedBooking) -> Unit = { BasicBooking(positionedBooking = it, onEditBooking = {bookingId -> onEditBooking(bookingId)}) },
     minDate: LocalDate = bookings.minByOrNull(Booking::startTime)?.startTime?.toLocalDate() ?: LocalDate.now(),
     maxDate: LocalDate = bookings.maxByOrNull(Booking::endTime)?.endTime?.toLocalDate() ?: LocalDate.now(),
     minTime: LocalTime = LocalTime.MIN,

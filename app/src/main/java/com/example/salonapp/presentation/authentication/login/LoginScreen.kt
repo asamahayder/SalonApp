@@ -133,6 +133,15 @@ fun LoginScreen(
                     )
                 }
 
+                if (!state.error.isNullOrEmpty()){
+                    Text(
+                        text = stringResource(R.string.login_error),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+
                 Spacer(modifier = Modifier.height(50.dp))
 
                 Button(

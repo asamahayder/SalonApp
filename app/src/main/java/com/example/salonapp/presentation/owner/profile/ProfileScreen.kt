@@ -34,7 +34,9 @@ import com.example.salonapp.presentation.owner.services.ServicesEvent
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    onEditSalon: (salonId:Int) -> Unit
+    onEditSalon: (salonId:Int) -> Unit,
+    onEditProfile: () -> Unit,
+    onLogOut: () -> Unit,
 ){
 
     val state = viewModel.state.value
@@ -45,77 +47,87 @@ fun ProfileScreen(
     }
 
 
-    Box(modifier = Modifier.fillMaxSize()){
-
-        if (state.isLoading){
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .size(100.dp)
-                    .align(Alignment.Center)
-            )
+    Column {
+        Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+            TextButton(onClick = { onLogOut() }) {
+                Text(text = stringResource(R.string.logout))
+            }
         }
 
-        else if (state.error != null){
-            Column(Modifier.align(Alignment.Center)) {
-                Text(text = "An error happened, please refresh", textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(10.dp))
-                IconButton(onClick = { viewModel.onEvent(ProfileEvent.OnInitialize) }) {
-                    Icon(Icons.Filled.Refresh, contentDescription = stringResource(id = R.string.try_again))
-                }
-            }
-        }else{
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .align(Alignment.Center)
-                    .padding(20.dp,20.dp,20.dp,0.dp)) {
+        Box(modifier = Modifier.fillMaxSize()){
 
-                Text(text = stringResource(R.string.user), fontWeight = FontWeight.Bold, fontSize = 30.sp)
-
-                Divider()
-
-                Spacer(Modifier.height(10.dp))
-
-                ProfileCard(onEditProfile = {
-
-                })
-
-                Spacer(Modifier.height(10.dp))
-
-                Text(text = stringResource(R.string.salons), fontWeight = FontWeight.Bold, fontSize = 30.sp)
-
-                Divider()
-
-
-
-                LazyColumn (
+            if (state.isLoading){
+                CircularProgressIndicator(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .size(100.dp)
+                        .align(Alignment.Center)
+                )
+            }
 
-                ){
-
-
-                    itemsIndexed(state.salons){index, salon ->
-                        if (index == 0){
-                            Spacer(Modifier.height(10.dp))
-                        }
-
-                        val isOwner = state.user!!.role == Constants.ROLE_OWNER
-
-                        SalonCard(salon = salon, isOwner = isOwner, onEditSalon = { onEditSalon(salon.id)})
-                        Spacer(Modifier.height(5.dp))
+            else if (state.error != null){
+                Column(Modifier.align(Alignment.Center)) {
+                    Text(text = "An error happened, please refresh", textAlign = TextAlign.Center, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    IconButton(onClick = { viewModel.onEvent(ProfileEvent.OnInitialize) }) {
+                        Icon(Icons.Filled.Refresh, contentDescription = stringResource(id = R.string.try_again))
                     }
                 }
+            }else{
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
+                        .padding(20.dp, 20.dp, 20.dp, 0.dp)) {
 
+                    Text(text = stringResource(R.string.user), fontWeight = FontWeight.Bold, fontSize = 30.sp)
+
+                    Divider()
+
+                    Spacer(Modifier.height(10.dp))
+
+                    ProfileCard(onEditProfile = {
+                        onEditProfile()
+                    })
+
+                    Spacer(Modifier.height(10.dp))
+
+                    Text(text = stringResource(R.string.salons), fontWeight = FontWeight.Bold, fontSize = 30.sp)
+
+                    Divider()
+
+
+
+                    LazyColumn (
+                        modifier = Modifier
+                            .fillMaxWidth()
+
+                    ){
+
+
+                        itemsIndexed(state.salons){index, salon ->
+                            if (index == 0){
+                                Spacer(Modifier.height(10.dp))
+                            }
+
+                            val isOwner = state.user!!.role == Constants.ROLE_OWNER
+
+                            SalonCard(salon = salon, isOwner = isOwner, onEditSalon = { onEditSalon(salon.id)})
+                            Spacer(Modifier.height(5.dp))
+                        }
+                    }
+
+
+
+                }
 
 
             }
 
 
         }
-
-
     }
+
+
 
 
 

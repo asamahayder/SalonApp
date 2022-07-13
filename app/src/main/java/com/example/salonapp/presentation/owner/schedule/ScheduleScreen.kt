@@ -36,7 +36,8 @@ inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier
 fun ScheduleScreen(
     viewModel: ScheduleViewModel = hiltViewModel(),
     onCreateSalon: (firstSalon: Boolean) -> Unit,
-    onCreateBooking: () -> Unit
+    onCreateBooking: () -> Unit,
+    onEditBooking: (bookingId:Int) -> Unit
 ){
     val state = viewModel.state.value
 
@@ -226,6 +227,9 @@ fun ScheduleScreen(
                     },
                     onCreateBooking = {
                         onCreateBooking()
+                    },
+                    onEditBooking = {
+                        onEditBooking(it)
                     }
                 )
 

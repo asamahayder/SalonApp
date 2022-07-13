@@ -9,3 +9,15 @@ data class Employee (
     val phone: String = "",
     val role: String = ""
 )
+
+fun Employee.toUser(): User{
+    return User(
+        id = this.id,
+        firstName = this.firstName,
+        lastName = this.lastName,
+        email = this.email,
+        phone = this.phone,
+        role = this.role
+
+    )
+}

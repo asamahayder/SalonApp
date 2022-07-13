@@ -12,19 +12,19 @@ import com.example.salonapp.presentation.owner.MainScreenOwner
 //Based on code from https://github.com/stevdza-san/NestedNavigationBottomBarDemo
 
 @Composable
-fun RootNavigationGraph(navController: NavHostController) {
+fun RootNavigationGraph(navController: NavHostController, onLogOut:()->Unit) {
     NavHost(
         navController = navController,
         route = Graph.ROOT,
         startDestination = Graph.AUTHENTICATION
     ) {
         authNavGraph(navController = navController)
-        employeeNavGraph(navController = navController)
+        employeeNavGraph(navController = navController, onLogOut = {onLogOut()})
+        customerNavGraph(navController = navController, onLogOut = {onLogOut()})
         composable(route = Graph.OWNER) {
-            MainScreenOwner()
-        }
-        composable(route = Graph.CUSTOMER) {
-            MainScreenCustomer()
+            MainScreenOwner(onLogOut = {
+                onLogOut()
+            })
         }
     }
 }
@@ -35,7 +35,4 @@ object Graph {
     const val OWNER = "owner_graph"
     const val EMPLOYEE = "employee_graph"
     const val CUSTOMER = "customer_graph"
-
-
-    const val DETAILS = "details_graph"
 }

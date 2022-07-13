@@ -31,6 +31,7 @@ fun EmployeeScheduleScreen(
     onGoToRequestCreation: () -> Unit,
     onGoToProfile: () -> Unit,
     onCreateBooking: () -> Unit,
+    onEditBooking: (bookingId:Int) -> Unit,
     ) {
 
     val state = viewModel.state.value
@@ -85,6 +86,8 @@ fun EmployeeScheduleScreen(
                 Button(onClick = { onGoToRequestCreation() }) {
                     Text(text = stringResource(R.string.request_page), textAlign = TextAlign.Center)
                 }
+
+
             }
 
         }
@@ -101,12 +104,18 @@ fun EmployeeScheduleScreen(
                     IconButton(onClick = {onGoToProfile()}) {
                         Icon(Icons.Filled.Person, contentDescription = stringResource(id = R.string.bottom_nav_profile), modifier = Modifier.size(40.dp))
                     }
-
                 }
 
                 Divider()
 
-                Schedule(bookings = state.bookings, onCreateBooking = { onCreateBooking }, onWeekChanged = {})
+                Schedule(
+                    bookings = state.bookings,
+                    onCreateBooking = { onCreateBooking() },
+                    onWeekChanged = {},
+                    onEditBooking = { bookingId ->
+                        onEditBooking(bookingId)
+                    }
+                )
 
             }
         }

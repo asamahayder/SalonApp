@@ -1,4 +1,4 @@
-package com.example.salonapp.domain.use_cases.user.get_user
+package com.example.salonapp.domain.use_cases.user
 
 import com.example.salonapp.common.Resource
 import com.example.salonapp.domain.models.User

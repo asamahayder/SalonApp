@@ -8,12 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.salonapp.common.Constants
 import com.example.salonapp.common.Resource
 import com.example.salonapp.common.SessionManager
-import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.use_cases.booking.GetBookingByEmployeeIdUseCase
 import com.example.salonapp.domain.use_cases.salons.GetSalonUseCase
-import com.example.salonapp.domain.use_cases.salons.GetSalonsByOwnerIdUseCase
-import com.example.salonapp.domain.use_cases.user.get_user.GetEmployeeUseCase
-import com.example.salonapp.presentation.owner.employees.EmployeesEvent
+import com.example.salonapp.domain.use_cases.user.GetEmployeeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -47,6 +44,8 @@ class  EmployeeScheduleViewModel @Inject constructor(
         val userID: Int? = sessionManager.fetchUserId()
 
         if (userID != null){
+            sessionManager.saveEmployeeId(userID)
+
             getEmployeeUseCase(userID).onEach { result ->
 
                 Log.i(Constants.LOGTAG_USECASE_RESULTS, result.message?: "")
@@ -60,6 +59,8 @@ class  EmployeeScheduleViewModel @Inject constructor(
                         )
 
                         if (result.data.salonId != null){
+
+                            sessionManager.saveSalonId(result.data.salonId)
 
                             getSalon(salonId = result.data.salonId, userID)
 

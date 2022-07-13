@@ -7,49 +7,61 @@ import java.time.LocalTime
 
 data class OpeningHours(
     val employee: User,
-    val fridayEnd: LocalDateTime,
+    val fridayEnd: LocalTime,
     val fridayOpen: Boolean,
-    val fridayStart: LocalDateTime,
-    val mondayEnd: LocalDateTime,
+    val fridayStart: LocalTime,
+    val mondayEnd: LocalTime,
     val mondayOpen: Boolean,
-    val mondayStart: LocalDateTime,
-    val saturdayEnd: LocalDateTime,
+    val mondayStart: LocalTime,
+    val saturdayEnd: LocalTime,
     val saturdayOpen: Boolean,
-    val saturdayStart: LocalDateTime,
-    val sundayEnd: LocalDateTime,
+    val saturdayStart: LocalTime,
+    val sundayEnd: LocalTime,
     val sundayOpen: Boolean,
-    val sundayStart: LocalDateTime,
-    val thursdayEnd: LocalDateTime,
+    val sundayStart: LocalTime,
+    val thursdayEnd: LocalTime,
     val thursdayOpen: Boolean,
-    val thursdayStart: LocalDateTime,
-    val tuesdayEnd: LocalDateTime,
+    val thursdayStart: LocalTime,
+    val tuesdayEnd: LocalTime,
     val tuesdayOpen: Boolean,
-    val tuesdayStart: LocalDateTime,
-    val wednessdayEnd: LocalDateTime,
+    val tuesdayStart: LocalTime,
+    val wednessdayEnd: LocalTime,
     val wednessdayOpen: Boolean,
-    val wednessdayStart: LocalDateTime
+    val wednessdayStart: LocalTime
 )
 
 fun OpeningHours.getStartOfDay(date: LocalDate): LocalTime{
     return when(date.dayOfWeek){
-        DayOfWeek.MONDAY -> mondayStart.toLocalTime()
-        DayOfWeek.TUESDAY -> tuesdayStart.toLocalTime()
-        DayOfWeek.WEDNESDAY -> wednessdayStart.toLocalTime()
-        DayOfWeek.THURSDAY -> thursdayStart.toLocalTime()
-        DayOfWeek.FRIDAY -> fridayStart.toLocalTime()
-        DayOfWeek.SATURDAY -> saturdayStart.toLocalTime()
-        DayOfWeek.SUNDAY -> sundayStart.toLocalTime()
+        DayOfWeek.MONDAY -> mondayStart
+        DayOfWeek.TUESDAY -> tuesdayStart
+        DayOfWeek.WEDNESDAY -> wednessdayStart
+        DayOfWeek.THURSDAY -> thursdayStart
+        DayOfWeek.FRIDAY -> fridayStart
+        DayOfWeek.SATURDAY -> saturdayStart
+        DayOfWeek.SUNDAY -> sundayStart
     }
 }
 
 fun OpeningHours.getEndOfDay(date:LocalDate): LocalTime{
     return when(date.dayOfWeek){
-        DayOfWeek.MONDAY -> mondayEnd.toLocalTime()
-        DayOfWeek.TUESDAY -> tuesdayEnd.toLocalTime()
-        DayOfWeek.WEDNESDAY -> wednessdayEnd.toLocalTime()
-        DayOfWeek.THURSDAY -> thursdayEnd.toLocalTime()
-        DayOfWeek.FRIDAY -> fridayEnd.toLocalTime()
-        DayOfWeek.SATURDAY -> saturdayEnd.toLocalTime()
-        DayOfWeek.SUNDAY -> sundayEnd.toLocalTime()
+        DayOfWeek.MONDAY -> mondayEnd
+        DayOfWeek.TUESDAY -> tuesdayEnd
+        DayOfWeek.WEDNESDAY -> wednessdayEnd
+        DayOfWeek.THURSDAY -> thursdayEnd
+        DayOfWeek.FRIDAY -> fridayEnd
+        DayOfWeek.SATURDAY -> saturdayEnd
+        DayOfWeek.SUNDAY -> sundayEnd
+    }
+}
+
+fun OpeningHours.isOpen(date:LocalDate): Boolean{
+    return when(date.dayOfWeek){
+        DayOfWeek.MONDAY -> mondayOpen
+        DayOfWeek.TUESDAY -> tuesdayOpen
+        DayOfWeek.WEDNESDAY -> wednessdayOpen
+        DayOfWeek.THURSDAY -> thursdayOpen
+        DayOfWeek.FRIDAY -> fridayOpen
+        DayOfWeek.SATURDAY -> saturdayOpen
+        DayOfWeek.SUNDAY -> sundayOpen
     }
 }

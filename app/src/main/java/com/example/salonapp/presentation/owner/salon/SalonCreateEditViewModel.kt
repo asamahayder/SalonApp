@@ -1,4 +1,4 @@
-package com.example.salonapp.presentation.owner.salon_create
+package com.example.salonapp.presentation.owner.salon
 
 import android.util.Log
 import androidx.compose.runtime.State
@@ -10,6 +10,9 @@ import com.example.salonapp.common.Resource
 import com.example.salonapp.domain.models.Salon
 import com.example.salonapp.domain.models.ValidationResult
 import com.example.salonapp.domain.use_cases.salons.CreateSalonUseCase
+import com.example.salonapp.domain.use_cases.salons.DeleteSalonUseCase
+import com.example.salonapp.domain.use_cases.salons.GetSalonUseCase
+import com.example.salonapp.domain.use_cases.salons.UpdateSalonUseCase
 import com.example.salonapp.domain.use_cases.validations.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -19,8 +22,11 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class  SalonCreateViewModel @Inject constructor(
+class  SalonCreateEditViewModel @Inject constructor(
     private val createSalonUseCase: CreateSalonUseCase,
+    private val getSalonUseCase: GetSalonUseCase,
+    private val updateSalonUseCase: UpdateSalonUseCase,
+    private val deleteSalonUseCase: DeleteSalonUseCase,
     private val validateSalonNameUseCase: ValidateSalonNameUseCase,
     private val validateEmailUseCase: ValidateEmailUseCase,
     private val validatePhoneUseCase: ValidatePhoneUseCase,
@@ -32,47 +38,99 @@ class  SalonCreateViewModel @Inject constructor(
     private val validateDoorUseCase: ValidateDoorUseCase
 ) : ViewModel(){
 
-    private val _state = mutableStateOf(SalonCreateState())
-    val state: State<SalonCreateState> = _state
+    private val _state = mutableStateOf(SalonCreateEditState())
+    val state: State<SalonCreateEditState> = _state
 
-    private val eventChannel = Channel<SalonCreateEvent>()
+    private val eventChannel = Channel<SalonCreateEditEvent>()
     val events = eventChannel.receiveAsFlow()
 
-    init {
+
+    fun initialize(salonId:Int?){
+        _state.value = SalonCreateEditState(salonId = salonId)
+
+        if (salonId != null){
+
+            getSalonUseCase(salonId).onEach {result ->
+                when(result){
+                    is Resource.Success -> {
+                        val salon = result.data!!
+
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            error = null,
+                            name = salon.name,
+                            email = salon.email,
+                            phone = salon.phone,
+                            city = salon.city,
+                            postCode = salon.postCode,
+                            streetName = salon.streetName,
+                            streetNumber = salon.streetNumber,
+                            suit = salon.suit,
+                            door = salon.door,
+                            employees = salon.employees
+                        )
+
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(isLoading = true)
+
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(isLoading = false, error = result.message ?: "Unexpected error")
+                    }
+                }
+
+            }.launchIn(viewModelScope)
+
+        }
 
     }
 
-    fun onEvent(event: SalonCreateEvent) {
+
+    fun onEvent(event: SalonCreateEditEvent) {
         when(event) {
-            is SalonCreateEvent.NameChanged -> {
+            is SalonCreateEditEvent.NameChanged -> {
                 _state.value = _state.value.copy(name = event.name)
             }
-            is SalonCreateEvent.EmailChanged -> {
+            is SalonCreateEditEvent.EmailChanged -> {
                 _state.value = _state.value.copy(email = event.email)
             }
-            is SalonCreateEvent.PhoneChanged -> {
+            is SalonCreateEditEvent.PhoneChanged -> {
                 _state.value = _state.value.copy(phone = event.phone)
             }
-            is SalonCreateEvent.CityChanged -> {
+            is SalonCreateEditEvent.CityChanged -> {
                 _state.value = _state.value.copy(city = event.city)
             }
-            is SalonCreateEvent.PostCodeChanged -> {
+            is SalonCreateEditEvent.PostCodeChanged -> {
                 _state.value = _state.value.copy(postCode = event.postCode)
             }
-            is SalonCreateEvent.StreetNameChanged -> {
+            is SalonCreateEditEvent.StreetNameChanged -> {
                 _state.value = _state.value.copy(streetName = event.streetName)
             }
-            is SalonCreateEvent.StreetNumberChanged -> {
+            is SalonCreateEditEvent.StreetNumberChanged -> {
                 _state.value = _state.value.copy(streetNumber = event.streetNumber)
             }
-            is SalonCreateEvent.SuitChanged -> {
+            is SalonCreateEditEvent.SuitChanged -> {
                 _state.value = _state.value.copy(suit = event.suit)
             }
-            is SalonCreateEvent.DoorChanged -> {
+            is SalonCreateEditEvent.DoorChanged -> {
                 _state.value = _state.value.copy(door = event.door)
             }
-            is SalonCreateEvent.Submit -> {
+            is SalonCreateEditEvent.Submit -> {
                 runValidation()
+            }
+            is SalonCreateEditEvent.OnDeleteSalon -> {
+                deleteSalon()
+
+            }
+            is SalonCreateEditEvent.OnShowDeleteAlert -> {
+                _state.value = _state.value.copy(showAlert = true)
+            }
+            is SalonCreateEditEvent.OnDismissDeleteAlert -> {
+                _state.value = _state.value.copy(showAlert = false)
+            }
+            is SalonCreateEditEvent.OnInitialize -> {
+                initialize(event.salonId)
             }
         }
     }
@@ -139,7 +197,79 @@ class  SalonCreateViewModel @Inject constructor(
             return
         }
 
-        createSalon()
+
+        if (_state.value.salonId != null){
+            updateSalon()
+        }else{
+            createSalon()
+        }
+
+    }
+
+    private fun deleteSalon(){
+        if (_state.value.salonId == null) return
+
+        deleteSalonUseCase(_state.value.salonId!!).onEach {result ->
+            Log.i(Constants.LOGTAG_USECASE_RESULTS, result.message?: "")
+            Log.i(Constants.LOGTAG_USECASE_RESULTS, result.data.toString())
+
+            when(result){
+                is Resource.Success -> {
+                    eventChannel.send(SalonCreateEditEvent.OnFinishedAction)
+                }
+                is Resource.Error -> {
+                    _state.value = _state.value.copy(
+                        error = result.message ?: "Unexpected error occurred",
+                        isLoading = false
+                    )
+                }
+                is Resource.Loading -> {
+                    _state.value = _state.value.copy(isLoading = true)
+                }
+            }
+
+        }.launchIn(viewModelScope)
+
+    }
+
+    private fun updateSalon(){
+
+        if (_state.value.salonId == null) return
+
+        val updatedSalon = Salon(
+            id = _state.value.salonId!!,
+            name = _state.value.name,
+            email = _state.value.email ?: "",
+            phone = _state.value.phone,
+            city = _state.value.city,
+            postCode = _state.value.postCode,
+            streetName = _state.value.streetName,
+            streetNumber = _state.value.streetNumber,
+            suit = _state.value.suit ?: "",
+            door = _state.value.door ?: "",
+            employees = _state.value.employees,
+        )
+
+        updateSalonUseCase(updatedSalon).onEach { result ->
+
+            Log.i(Constants.LOGTAG_USECASE_RESULTS, result.message?: "")
+            Log.i(Constants.LOGTAG_USECASE_RESULTS, result.data.toString())
+
+            when(result){
+                is Resource.Success -> {
+                    eventChannel.send(SalonCreateEditEvent.OnFinishedAction)
+                }
+                is Resource.Error -> {
+                    _state.value = _state.value.copy(
+                        error = result.message ?: "Unexpected error occurred",
+                        isLoading = false
+                    )
+                }
+                is Resource.Loading -> {
+                    _state.value = _state.value.copy(isLoading = true)
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun createSalon(){
@@ -162,7 +292,7 @@ class  SalonCreateViewModel @Inject constructor(
 
             when(result){
                 is Resource.Success -> {
-                    eventChannel.send(SalonCreateEvent.SalonCreatedSuccessfully)
+                    eventChannel.send(SalonCreateEditEvent.OnFinishedAction)
                 }
                 is Resource.Error -> {
                     _state.value = _state.value.copy(

@@ -102,9 +102,7 @@ class  ScheduleViewModel @Inject constructor(
                 sessionManager.saveSalonId(event.salon.id)
 
                 if (!event.salon.employees.isNullOrEmpty()){
-                    _state.value = _state.value.copy(
-                        activeEmployee = event.salon.employees[0]
-                    )
+                    onEvent(ScheduleEvent.OnSetActiveEmployee(event.salon.employees[0]))
                 }
 
             }

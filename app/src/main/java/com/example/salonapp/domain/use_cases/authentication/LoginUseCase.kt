@@ -17,6 +17,8 @@ class LoginUseCase @Inject constructor(
     operator fun invoke(user: UserLogin): Flow<Resource<String>> = flow {
         try {
 
+            sessionManager.clearSessionManager()
+
             var message: String = ""
 
             emit(Resource.Loading())
@@ -28,6 +30,7 @@ class LoginUseCase @Inject constructor(
             if (!message.isNullOrBlank() && response.userId != null) {
                 sessionManager.saveAuthToken(message)
                 sessionManager.saveUserId(response.userId)
+
                 emit(Resource.Success(data = "Login Successful"))
             }
             else emit(Resource.Error("Couldn't retrieve message or user id from server."))

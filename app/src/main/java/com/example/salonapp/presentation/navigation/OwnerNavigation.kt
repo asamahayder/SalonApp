@@ -13,27 +13,36 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.salonapp.R
 import com.example.salonapp.presentation.components.booking.BookingCreateEditScreen
+import com.example.salonapp.presentation.components.profile.profile_edit.ProfileEditScreen
 import com.example.salonapp.presentation.owner.employees.EmployeesScreen
 import com.example.salonapp.presentation.owner.profile.ProfileScreen
-import com.example.salonapp.presentation.owner.salon_create.SalonCreateScreen
+import com.example.salonapp.presentation.owner.salon.SalonCreateEditScreen
 import com.example.salonapp.presentation.owner.schedule.ScheduleScreen
 import com.example.salonapp.presentation.owner.services.ServicesScreen
 import com.example.salonapp.presentation.owner.services.create_edit.ServicesCreateEditScreen
 import java.lang.NumberFormatException
 
 @Composable
-fun OwnerNavGraph(navController: NavHostController) {
+fun OwnerNavGraph(navController: NavHostController, onLogOut:()->Unit) {
     NavHost(
         navController = navController,
         route = Graph.OWNER,
-        startDestination = BottomNavScreen.Schedule.route
+        startDestination = BottomNavScreen.Schedule.route,
     ) {
         composable(route = BottomNavScreen.Schedule.route) {
             ScheduleScreen(
-                onCreateSalon = { firstSalon ->
-                    if (firstSalon) navController.popBackStack()
-                    navController.navigate(OwnerScreen.SalonCreate.route)},
-                onCreateBooking = { navController.navigate(OwnerScreen.BookingCreate.route)}
+                onCreateSalon = {firstSalon ->
+
+                    if (firstSalon){
+                        navController.navigate(OwnerScreen.SalonCreateEditFirst.route)
+                    }else{
+                        navController.navigate(OwnerScreen.SalonCreateEdit.route + "/null")
+                    }
+                },
+                onCreateBooking = { navController.navigate(OwnerScreen.BookingCreate.route + "/null")},
+                onEditBooking = {bookingId ->
+                    navController.navigate(OwnerScreen.BookingCreate.route + "/" + bookingId)
+                }
             )
         }
 
@@ -48,7 +57,7 @@ fun OwnerNavGraph(navController: NavHostController) {
 
                 },
                 onCreateSalon = {
-                    navController.navigate(OwnerScreen.SalonCreate.route)
+                    navController.navigate(OwnerScreen.SalonCreateEdit.route + "/null")
                 }
             )
         }
@@ -56,63 +65,101 @@ fun OwnerNavGraph(navController: NavHostController) {
         composable(route = BottomNavScreen.Employees.route) {
             EmployeesScreen(
                 onCreateSalon = {
-                navController.navigate(OwnerScreen.SalonCreate.route)
+                navController.navigate(OwnerScreen.SalonCreateEdit.route + "/null")
             })
         }
 
         composable(route = BottomNavScreen.Profile.route) {
-            ProfileScreen(onEditSalon = {
-
-            })
+            ProfileScreen(
+                onEditSalon = { salonId ->
+                    navController.navigate(OwnerScreen.SalonCreateEdit.route + "/" + salonId)
+                },
+                onEditProfile = {
+                    navController.navigate(OwnerScreen.ProfileEdit.route)
+                },
+                onLogOut = {
+                    onLogOut()
+                }
+            )
         }
 
-        composable(route = OwnerScreen.SalonCreate.route) {
-            SalonCreateScreen(onSalonCreated = {
-                navController.popBackStack()
-                navController.navigate(BottomNavScreen.Schedule.route)
+        composable(route = OwnerScreen.SalonCreateEdit.route + "/{salonId}") { backStackEntry ->
+            var salonId: Int?
+            try {
+                salonId = backStackEntry.arguments?.getString("salonId")?.toInt()
+            }catch (e: NumberFormatException){
+                salonId = null
+            }
+
+            SalonCreateEditScreen(
+                salonId = salonId,
+                onSalonCreated = {
+
+                    if (salonId != null){
+                        navController.popBackStack()
+                    }else{
+                        navController.popBackStack(BottomNavScreen.Schedule.route, false)
+                    }
             })
 
         }
 
-        composable(route = OwnerScreen.BookingCreate.route) {
+        composable(route = OwnerScreen.SalonCreateEditFirst.route ) {
+
+            SalonCreateEditScreen(
+                salonId = null,
+                firstSalon = true,
+                onSalonCreated = {
+                    navController.popBackStack(BottomNavScreen.Schedule.route, false)
+                })
+
+        }
+
+        composable(route = OwnerScreen.BookingCreate.route + "/{bookingId}") {backStackEntry ->
+            var bookingId: Int? = try {
+                backStackEntry.arguments?.getString("bookingId")?.toInt()
+            }catch (e: NumberFormatException){
+                null
+            }
+
             BookingCreateEditScreen(
-//                bookingId = null,
-//                onBookingCreatedOrUpdated = {
-//                    navController.popBackStack()
-//                    navController.navigate(BottomNavScreen.Schedule.route)
-//                }
+                bookingId = bookingId,
+                onBookingCreatedOrUpdated = {
+                    navController.popBackStack()
+                },
+                onReturnToPreviousScreen = {
+                    navController.popBackStack()
+                }
             )
         }
 
 
         composable(route = OwnerScreen.ServiceCreate.route + "/{serviceId}") {backStackEntry ->
 
-            var serviceID: Int?
-            try {
-                serviceID = backStackEntry.arguments?.getString("serviceId")?.toInt()
+            var serviceID: Int? = try {
+                backStackEntry.arguments?.getString("serviceId")?.toInt()
             }catch (e: NumberFormatException){
-                serviceID = null
+                null
             }
-
-
 
             ServicesCreateEditScreen(
                 serviceId = serviceID,
                 onServiceCreatedOrEdited = {
                     navController.popBackStack()
-                    navController.navigate(BottomNavScreen.Services.route)
                 }
             )
         }
 
-//        composable(route = OwnerScreen.ServiceCreate.route){
-//            ServicesCreateScreen(
-//                onServiceCreated = {
-//                    navController.popBackStack()
-//                    navController.navigate(BottomNavScreen.Services.route)
-//                }
-//            )
-//        }
+        composable(route = OwnerScreen.ProfileEdit.route) {
+            ProfileEditScreen(
+                onUpdateSuccess = {
+                    navController.popBackStack()
+                },
+                onDeleteSuccess = {
+                    onLogOut()
+                }
+            )
+        }
 
     }
 }
@@ -121,7 +168,10 @@ fun OwnerNavGraph(navController: NavHostController) {
 sealed class OwnerScreen(
     val route: String,
 ){
-    object SalonCreate : OwnerScreen(
+    object SalonCreateEditFirst : OwnerScreen(
+        route = "salon_create_first"
+    )
+    object SalonCreateEdit : OwnerScreen(
         route = "salon_create"
     )
     object BookingCreate : OwnerScreen(
@@ -129,6 +179,9 @@ sealed class OwnerScreen(
     )
     object ServiceCreate : OwnerScreen(
         route = "service_create"
+    )
+    object ProfileEdit : OwnerScreen(
+        route = "profile_edit"
     )
 }
 

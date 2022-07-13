@@ -8,5 +8,6 @@ data class BookingDTO(
     val serviceId: Int,
     val startTime: String,
     val endTime: String,
-    val note: String
+    val note: String?,
+    val pairId: String?
 )

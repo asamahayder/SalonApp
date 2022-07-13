@@ -23,13 +23,16 @@ import com.example.salonapp.presentation.navigation.OwnerNavGraph
 @Composable
 fun MainScreenOwner(
     navController: NavHostController = rememberNavController(),
+    onLogOut:()->Unit,
 ) {
 
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            OwnerNavGraph(navController = navController)
+            OwnerNavGraph(navController = navController, onLogOut = {
+                onLogOut()
+            })
         }
     }
 
