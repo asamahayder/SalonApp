@@ -15,4 +15,7 @@ object Constants {
     const val SALON_ID_NOT_FOUND = "salon id not found"
     const val EMPLOYEE_ID_NOT_FOUND = "employee id not found"
 
+    const val TEST_TAG_REGISTER_BUTTON = "register_button"
+    const val TEST_TAG_EMAIL_ERROR_TEXT = "email_error_text"
+
 }

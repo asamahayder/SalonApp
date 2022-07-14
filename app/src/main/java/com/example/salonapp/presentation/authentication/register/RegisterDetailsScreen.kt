@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.salonapp.R
+import com.example.salonapp.common.Constants
 import com.example.salonapp.presentation.components.screenLogoAndTitle
 
 @Composable
@@ -99,7 +101,7 @@ fun RegisterDetailsScreen(
                     Text(
                         text = state.emailRegisterError,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.End)
+                        modifier = Modifier.align(Alignment.End).testTag(Constants.TEST_TAG_EMAIL_ERROR_TEXT)
                     )
                 }
 
@@ -264,6 +266,7 @@ fun RegisterDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
+                        .testTag(Constants.TEST_TAG_REGISTER_BUTTON)
                 )
                 {
                     Text(
