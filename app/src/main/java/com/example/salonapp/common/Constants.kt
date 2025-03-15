@@ -1,9 +1,7 @@
 package com.example.salonapp.common
 
 object Constants {
-    //const val BASE_URL = "http://10.0.2.2:5211/api/"
-    ///const val BASE_URL = "http://localhost:8080/api/"
-    const val BASE_URL = "https://asamahaydersalonapi.azurewebsites.net/api/"
+    const val BASE_URL = "http://localhost:8080/api/"
 
     const val ROLE_OWNER = "Owner"
     const val ROLE_EMPLOYEE = "Employee"
